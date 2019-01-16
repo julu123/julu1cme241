@@ -7,10 +7,11 @@ def MarkovSimulation(changes,P,states,transitions,start):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
-    # states = possible states (list)
     # P = transition matrix (matrix)
+    # states = possible states (list)
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # start = start value in transition matrix (string)
+    final_step=0
     path=[start]
     current_activity = start
     for i in range(changes):
@@ -20,11 +21,17 @@ def MarkovSimulation(changes,P,states,transitions,start):
                 RV = np.random.choice(transitions[j],replace=True,p=P[j])
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
+                        if P[j][k] == 1:
+                            if i == changes-1:
+                                print("The procces reached the termination state", "'",states[j],"'", "after", final_step, "steps.")
+                            break 
                         path.append(states[k])
                         current_activity = states[k]
+                        final_step += 1
                         #print("k:", k) debugging
                         break
                 break
+    print(path)
     return(path)
 
 # These are my values. Transitions is a list that labels every possible transition, 
