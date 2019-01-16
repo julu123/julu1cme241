@@ -14,7 +14,6 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
     # reward = reward at each state (list of numerics values)
     # start = start value in transition matrix (string)
     # discount = discount factor between each state (numeric)
-    i = 0
     accumulated_reward = 0
     path=[start]
     current_activity = start
