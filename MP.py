@@ -3,10 +3,11 @@
 
 # This is a very basic code for simulating a Markov Process. It returns the path the Process takes.
 
-def MarkovSimulation(changes,P,transitions,start):
+def MarkovSimulation(changes,P,states,transitions,start):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
+    # states = possible states (list)
     # P = transition matrix (matrix)
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # start = start value in transition matrix (string)
@@ -39,7 +40,7 @@ P=[[0.5,0.2,0.3,0],[0,0,0.5,0.5],[0.3,0.3,0.1,0.3],[0,0.2,0.5,0.3]]
 
 
 #Simulate 7 steps, starting at "School" (States[0])
-q=MarkovSimulation(7,P,transitions,states[0])
+q=MarkovSimulation(7,P,states,transitions,states[0])
 
 
 
