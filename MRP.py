@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[278]:
-
+# This code returns an accumulated reward as well (does not use the reward from the starting point though
+# This code is basically the same as the MP, just with and added reward
 
 def MarkovReward(changes,P,transitions,reward,start,discount):
     import numpy as np
@@ -31,11 +31,10 @@ def MarkovReward(changes,P,transitions,reward,start,discount):
                 break
         i += 1
     print("The procces resulted in a reward of: ", accumulated_reward, ".")
-    return(path,reward)
+    return(path,accumulated_reward)
 
 
-# In[279]:
-
+#My MRP
 
 states=["School", "Game", "Food", "Party"]
 transitions=[["SS","SG","SF","SP"],["GS","GG","GF","GP"],["FS","FG","FF","FP"],["PS","PG","PF","PP"]]
@@ -43,13 +42,11 @@ P=[[0.5,0.2,0.3,0],[0,0,0.5,0.5],[0.3,0.3,0.1,0.3],[0,0.2,0.5,0.3]]
 reward=[5,3,1,-4]
 
 
-# In[287]:
-
-
 q,z=MarkovReward(7,P,transitions,reward,states[3],0.99)
 
-
-# In[ ]:
+# It will return something like:
+q=['Party', 'Food', 'Party', 'Food', 'Party', 'Food', 'Party', 'Game']
+z=-5.70535023979701
 
 
 
