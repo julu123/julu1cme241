@@ -3,7 +3,7 @@
 
 
 
-def MarkovReward(changes,P,states,start,discount,reward,print_text=False):
+def MarkovProcess(changes,P,states,start,discount,reward,print_text=False):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
@@ -57,7 +57,7 @@ P=[[0.5,0.1,0.2,0.2],[0,1,0,0],[0.3,0.1,0.3,0.3],[0,0.1,0.6,0.3]]
 
 
 # Run the command as
-q,z=MarkovReward(20,P,states[0],states[0][0],1,states[1],print_text=True)
+q,z=MarkovProcess(20,P,states[0],states[0][0],1,states[1],print_text=True)
 
 # Which will return something like:
 The procces reached the termination state ' Game ' after 11 steps.
@@ -69,7 +69,7 @@ The procces resulted in a reward of:  9 .
 n = 5000
 EV = 0
 for i in range(n):
-    q,z = MarkovReward(10,P,states[0],states[0][0],1,states[1],print_text=False)
+    q,z = MarkovProcess(10,P,states[0],states[0][0],1,states[1],print_text=False)
     EV += z
 print(EV/n)
 
