@@ -18,7 +18,7 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
     accumulated_reward = 0
     path=[start]
     current_activity = start
-    while i < changes:
+    for i in range(changes):
         for j in range(len(P)):
             if current_activity == states[j]:
                 #print("j:", j )
@@ -32,7 +32,6 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                         #print("k:", k)
                         break
                 break
-        i += 1
     print("The procces resulted in a reward of: ", accumulated_reward, ".")
     return(path,accumulated_reward)
 
