@@ -12,25 +12,27 @@ def MarkovSimulation(changes,P,states,transitions,start):
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # start = start value in transition matrix (string)
     final_step=0
+    i = 0
     path=[start]
     current_activity = start
-    for i in range(changes):
+    while i < changes:
         for j in range(len(P)):
             if current_activity == states[j]:
                 #print("j:", j ) Turn on for debugging. Every change in k has to be followed by the same change in j! 
                 RV = np.random.choice(transitions[j],replace=True,p=P[j])
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
-                        if P[j][k] == 1:
-                            if i == changes-1:
-                                print("The procces reached the termination state", "'",states[j],"'", "after", final_step, "steps.")
-                            break 
+                        if P[j][k] == 1 and k == j:
+                            i = changes
+                            print("The procces reached the termination state", "'",states[j],"'", "after", final_step, "steps.")
+                            break
                         path.append(states[k])
                         current_activity = states[k]
                         final_step += 1
                         #print("k:", k) debugging
                         break
                 break
+        i += 1
     print(path)
     return(path)
 
