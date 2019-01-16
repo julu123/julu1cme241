@@ -3,13 +3,12 @@
 
 # This code returns an accumulated reward as well (does not use the reward from the starting point though
 # This code is basically the same as the MP, just with and added reward
-def MarkovReward(changes,P,states,transitions,reward,start,discount,print_text=False):
+def MarkovReward(changes,P,states,reward,start,discount,print_text=False):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
     # P = transition matrix (matrix)
     # states = possible states (list)
-    # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # reward = reward at each state (list of numerics values)
     # start = start value in transition matrix (string)
     # discount = discount factor between each state (numeric)
@@ -21,9 +20,9 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount,print_text=F
         for j in range(len(P)):
             if current_activity == states[j]:
                 #print("j:", j )
-                RV = np.random.choice(transitions[j],replace=True,p=P[j])
+                RV = np.random.choice(states,replace=True,p=P[j])
                 for k in range(len(P)):
-                    if RV == transitions[j][k]:
+                    if RV == states[k]:
                         if P[j][k] == 1 and k == j:
                             if print_text == True:
                                 print("The procces reached the termination state", "'",states[j],"'", "after", i, "steps.")
@@ -47,11 +46,10 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount,print_text=F
 #My MRP
 
 states=[["School", "Game", "Food", "Party"],[5, 3, 1, -4]]
-transitions=[["SS","SG","SF","SP"],["GS","GG","GF","GP"],["FS","FG","FF","FP"],["PS","PG","PF","PP"]]
 P=[[0.5,0.2,0.2,0.1],[0,1,0,0],[0.3,0.1,0.3,0.3],[0,0.1,0.6,0.3]]
 
 
-q,z=MarkovReward(50,P,states[0],transitions,states[1],states[0][0],1,print_text=True)
+q,z=MarkovReward(50,P,states[0],states[1],states[0][0],1,print_text=True)
 
 # It will return something like:
 The procces reached the termination state ' Game ' after 7 steps.
