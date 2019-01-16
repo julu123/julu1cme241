@@ -3,7 +3,6 @@
 
 # This code returns an accumulated reward as well (does not use the reward from the starting point though
 # This code is basically the same as the MP, just with and added reward
-
 def MarkovReward(changes,P,states,transitions,reward,start,discount):
     import numpy as np
     import random
@@ -14,7 +13,6 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
     # reward = reward at each state (list of numerics values)
     # start = start value in transition matrix (string)
     # discount = discount factor between each state (numeric)
-    final_step = 0
     accumulated_reward = 0
     path=[start]
     current_activity = start
@@ -27,8 +25,8 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
                         if P[j][k] == 1 and k == j:
+                            print("The procces reached the termination state", "'",states[j],"'", "after", i, "steps.")
                             i = changes
-                            print("The procces reached the termination state", "'",states[j],"'", "after", final_step, "steps.")
                             break
                         path.append(states[k])
                         current_activity = states[k]
@@ -36,7 +34,6 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                         if i > 0:
                             accumulated_reward = accumulated_reward*discount
                         #print("k:", k)
-                        final_step += 1
                         break
                 break
         i += 1
