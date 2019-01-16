@@ -11,10 +11,9 @@ def MarkovSimulation(changes,P,states,transitions,start):
     # P = transition matrix (matrix)
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # start = start value in transition matrix (string)
-    i = 0
     path=[start]
     current_activity = start
-    while i < changes:
+    for i in range(changes):
         for j in range(len(P)):
             if current_activity == states[j]:
                 #print("j:", j ) Turn on for debugging. Every change in k has to be followed by the same change in j! 
@@ -26,7 +25,6 @@ def MarkovSimulation(changes,P,states,transitions,start):
                         #print("k:", k) debugging
                         break
                 break
-        i += 1
     return(path)
 
 # These are my values. Transitions is a list that labels every possible transition, 
