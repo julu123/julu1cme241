@@ -3,7 +3,7 @@
 
 
 
-def MarkovProcess(changes,P,states,start,discount,reward,print_text=False):
+def MarkovProcess(changes,P,states,start,discount=None,reward=None,print_text=False):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
