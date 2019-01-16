@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[270]:
-
+# This is a very basic code for simulating a Markov Process. It returns the path the Process takes.
 
 def MarkovSimulation(changes,P,transitions,start):
     import numpy as np
@@ -17,35 +16,32 @@ def MarkovSimulation(changes,P,transitions,start):
     while i < changes:
         for j in range(len(P)):
             if current_activity == states[j]:
-                #print("j:", j )
+                #print("j:", j ) Turn on for debugging. Every change in k has to be followed by the same change in j! 
                 RV = np.random.choice(transitions[j],replace=True,p=P[j])
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
                         path.append(states[k])
                         current_activity = states[k]
-                        #print("k:", k)
+                        #print("k:", k) debugging
                         break
                 break
         i += 1
-    print(path)
     return(path)
 
-
-# In[271]:
-
+# These are my values. Transitions is a list that labels every possible transition, 
+# e.g. Game to Game is labeled GG and has a probability of zero.
 
 states=["School", "Game", "Food", "Party"]
 transitions=[["SS","SG","SF","SP"],["GS","GG","GF","GP"],["FS","FG","FF","FP"],["PS","PG","PF","PP"]]
 P=[[0.5,0.2,0.3,0],[0,0,0.5,0.5],[0.3,0.3,0.1,0.3],[0,0.2,0.5,0.3]]
 
 
-# In[272]:
 
 
+#Simulate 7 steps, starting at "School" (States[0])
 q=MarkovSimulation(7,P,transitions,states[0])
 
 
-# In[ ]:
 
 
 
