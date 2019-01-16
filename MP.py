@@ -11,7 +11,6 @@ def MarkovSimulation(changes,P,states,transitions,start):
     # states = possible states (list)
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
     # start = start value in transition matrix (string)
-    final_step=0
     i = 0
     path=[start]
     current_activity = start
@@ -23,12 +22,11 @@ def MarkovSimulation(changes,P,states,transitions,start):
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
                         if P[j][k] == 1 and k == j:
+                            print("The procces reached the termination state", "'",states[j],"'", "after", i, "steps.")
                             i = changes
-                            print("The procces reached the termination state", "'",states[j],"'", "after", final_step, "steps.")
                             break
                         path.append(states[k])
                         current_activity = states[k]
-                        final_step += 1
                         #print("k:", k) debugging
                         break
                 break
