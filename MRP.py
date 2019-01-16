@@ -3,7 +3,7 @@
 
 # This code returns an accumulated reward as well (does not use the reward from the starting point though
 # This code is basically the same as the MP, just with and added reward
-def MarkovReward(changes,P,states,transitions,reward,start,discount):
+def MarkovReward(changes,P,states,transitions,reward,start,discount,print_text=False):
     import numpy as np
     import random
     # Changes = amount of times the process will change (integer)
@@ -25,7 +25,8 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                 for k in range(len(P)):
                     if RV == transitions[j][k]:
                         if P[j][k] == 1 and k == j:
-                            print("The procces reached the termination state", "'",states[j],"'", "after", i, "steps.")
+                            if print_text == True:
+                                print("The procces reached the termination state", "'",states[j],"'", "after", i, "steps.")
                             i = changes
                             break
                         path.append(states[k])
@@ -37,8 +38,9 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                         break
                 break
         i += 1
-    print("The path was:", path)
-    print("The procces resulted in a reward of: ", accumulated_reward, ".")
+    if print_text == True:
+        print("The path was:", path)
+        print("The procces resulted in a reward of: ", accumulated_reward, ".")
     return(path,accumulated_reward)
 
 
@@ -49,7 +51,7 @@ transitions=[["SS","SG","SF","SP"],["GS","GG","GF","GP"],["FS","FG","FF","FP"],[
 P=[[0.5,0.2,0.2,0.1],[0,1,0,0],[0.3,0.1,0.3,0.3],[0,0.1,0.6,0.3]]
 
 
-q,z=MarkovReward(50,P,states[0],transitions,states[1],states[0][0],1)
+q,z=MarkovReward(50,P,states[0],transitions,states[1],states[0][0],1,print_text=True)
 
 # It will return something like:
 The procces reached the termination state ' Game ' after 7 steps.
