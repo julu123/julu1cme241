@@ -22,7 +22,7 @@ def MarkovProcess(changes,P,states,start,discount,reward,print_text=False):
     while i < changes:
         for j in range(len(P)):
             if current_activity == states[j]:
-                #print("j:", j )
+                #print("j:", j ) - turn on for debugging (chain of jk's should be abbccdd... if code is running properly)
                 RV = np.random.choice(states,replace=True,p=P[j])
                 for k in range(len(P)):
                     if RV == states[k]:
@@ -37,7 +37,7 @@ def MarkovProcess(changes,P,states,start,discount,reward,print_text=False):
                             accumulated_reward += reward[k]
                             if i > 0:
                                 accumulated_reward = accumulated_reward*discount
-                        #print("k:", k)
+                        #print("k:", k) - turn on for debugging (chain of jk's should be abbccdd... if code is running properly)
                         break
                 break
         i += 1
