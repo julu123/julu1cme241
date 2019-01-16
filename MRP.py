@@ -27,7 +27,8 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
                         path.append(states[k])
                         current_activity = states[k]
                         accumulated_reward += reward[k]
-                        accumulated_reward = accumulated_reward*discount
+                        if i > 1:
+                            accumulated_reward = accumulated_reward*discount
                         #print("k:", k)
                         break
                 break
