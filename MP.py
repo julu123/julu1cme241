@@ -5,7 +5,7 @@
 
 def MarkovSimulation(changes,P,transitions,start):
     import numpy as np
-    import random as rm
+    import random
     # Changes = amount of times the process will change (integer)
     # P = transition matrix (matrix)
     # transitions = possible transitions in matrix, e.g. frome state A to B and so forth (strings)
