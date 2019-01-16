@@ -46,15 +46,15 @@ def MarkovReward(changes,P,states,transitions,reward,start,discount):
 
 states=[["School", "Game", "Food", "Party"],[5, 3, 1, -4]]
 transitions=[["SS","SG","SF","SP"],["GS","GG","GF","GP"],["FS","FG","FF","FP"],["PS","PG","PF","PP"]]
-P=[[0.5,0.2,0.3,0],[0,0,0.5,0.5],[0.3,0.3,0.1,0.3],[0,0.2,0.5,0.3]]
+P=[[0.5,0.2,0.2,0.1],[0,1,0,0],[0.3,0.1,0.3,0.3],[0,0.1,0.6,0.3]]
 
 
-q,z=MarkovReward(7,P,states[0],transitions,states[1],states[0][3],0.99)
+q,z=MarkovReward(50,P,states[0],transitions,states[1],states[0][0],1)
 
 # It will return something like:
-The procces reached the termination state ' Game ' after 6 steps.
-The path was: ['School', 'School', 'School', 'School', 'School', 'School', 'Game']
-The procces resulted in a reward of:  28 .
+The procces reached the termination state ' Game ' after 7 steps.
+The path was: ['School', 'Food', 'Party', 'Food', 'School', 'School', 'School', 'Game']
+The procces resulted in a reward of:  16 .
 
 
 
