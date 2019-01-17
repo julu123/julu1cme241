@@ -9,20 +9,24 @@ def MarkovProcess(changes,P,states,start,discount=None,reward=None,print_text=Fa
     # Changes = amount of times the process will change (integer)
     # P = transition matrix (matrix)
     # states = possible states (list)
-    # reward = reward at each state (list of numerics values) - set as None for just a MP
-    # start = start value in transition matrix (string) - set as None for just a MP
+    # reward = reward at each state (list of numerics values)
+    # start = start value in transition matrix (string)
     # discount = discount factor between each state (numeric)
     path=[start]
     current_activity = start
     if reward != None:
-        accumulated_reward = 0   
-    if discount == None:
-        discount = 1
+        r=0
+        for text in states:
+            if start in text:
+                accumulated_reward = reward[r]
+            r += 1
+        if discount == None:
+            discount = 1
     i = 0
     while i < changes:
         for j in range(len(P)):
             if current_activity == states[j]:
-                #print("j:", j ) - turn on for debugging (chain of jk's should be abbccdd... if code is running properly)
+                #print("j:", j ) -- this can be used to debugging
                 RV = np.random.choice(states,replace=True,p=P[j])
                 for k in range(len(P)):
                     if RV == states[k]:
@@ -34,10 +38,8 @@ def MarkovProcess(changes,P,states,start,discount=None,reward=None,print_text=Fa
                         path.append(states[k])
                         current_activity = states[k]
                         if reward != None:
-                            accumulated_reward += reward[k]
-                            if i > 0:
-                                accumulated_reward = accumulated_reward*discount
-                        #print("k:", k) - turn on for debugging (chain of jk's should be abbccdd... if code is running properly)
+                            accumulated_reward += reward[k]*discount**(i+1)
+                        #print("k:", k) -- this can be used to debugging
                         break
                 break
         i += 1
@@ -62,7 +64,7 @@ q,z=MarkovProcess(20,P,states[0],states[0][0],1,states[1],print_text=True)
 # Which will return something like:
 The procces reached the termination state ' Game ' after 11 steps.
 The path was: ['School', 'School', 'School', 'School', 'Party', 'Party', 'Food', 'Party', 'Party', 'Food', 'School', 'Game']
-The procces resulted in a reward of:  9 .
+The procces resulted in a reward of:  14 .
 
 # Or simulate the expected payoff as:
 
