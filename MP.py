@@ -1,23 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[776]:
-
-
 import numpy as np
 from typing import TypeVar, Dict, List
-
-
-# In[777]:
-
 
 State = TypeVar('S')
 States = List[State]
 Transitions = Dict[State,Dict[State,(int or float)]]
-
-
-# In[816]:
-
 
 class MP(object):
     #Defined by probability distribution (P) 
@@ -87,30 +76,11 @@ class MP(object):
             print("The path was:", path)
         return(path)
         
-
-
-# In[817]:
-
+#Test
 
 P={'Sleep':{'Wake up':0.7,'Eat':0.3},
    'Wake up':{'Eat':1},
    'Eat':{'Sleep':0.5,'Eat':0.5}}
-S=list(P)
-
-
-# In[818]:
-
-
-M=MP(P,None,True)
-
-
-# In[821]:
-
-
-M.Simulate(10,2,False)
-
-
-# In[ ]:
 
 
 
