@@ -1,12 +1,23 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[776]:
+
+
 import numpy as np
 from typing import TypeVar, Dict, List
 
-State = TypeVar('State')
+
+# In[777]:
+
+
+State = TypeVar('S')
 States = List[State]
-Transitions = Dict[State,Dict[State,(float or int)]]
+Transitions = Dict[State,Dict[State,(int or float)]]
+
+
+# In[816]:
+
 
 class MP(object):
     #Defined by probability distribution (P) 
@@ -16,7 +27,7 @@ class MP(object):
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
             else:
-                self.States=[i for i in range(len(ProbDist))]
+                self.States=[i for i in range(len(P))]
         else:
             self.States=S
         if isinstance(ProbDist, np.ndarray) == True:
@@ -46,47 +57,60 @@ class MP(object):
             return {self.States[i]:round(float(j),4) for i,j in enumerate(output_array)}
         elif choice == 'array':
             return output_array
-            
     def Simulate(self,steps,start:State=None,print_text=None):
         if start == None:
             start = self.States[0]
         elif isinstance(start, (int,float)) == True:
-            start = self.States[int(start)]
+            start = self.States[start]
         if print_text == None:
             print_text = self.print_text
         path = [start]
         current_activity = start
         i=0
         while i < steps:
-            if self.ProbDist[self.States.index(current_activity)][self.States.index(current_activity)] == 1:
-                steps=0
-                if print_text == True:
-                    print("The process terminated after", i, "steps, at the state", current_activity)
-            else:
-                RV=np.random.choice(self.States,replace=True,p=self.ProbDist[self.States.index(current_activity)])
-                current_activity = RV
-                path.append(current_activity)
-                i += 1
+            for j in range(len(self.States)):
+                if current_activity == self.States[j]:
+                    RV = np.random.choice(self.States,replace=True,p=self.ProbDist[j])
+                    for k in range(len(self.States)):
+                        if RV == self.States[k]:
+                            if self.ProbDist[j][k] == 1 and k == j:
+                                if print_text == True:
+                                    print("The procces reached the termination state", "'",self.States[j],"'", "after", i, "steps.")
+                                i = steps
+                                break
+                            path.append(self.States[k])
+                            current_activity = self.States[k]
+                            break
+                    break
+            i += 1
         if print_text == True:
             print("The path was:", path)
-        return path
-    
-    def Look_up(self,start:State,too:State,steps:int=1):
-        if isinstance (start, str) == True:
-            i = self.States.index(start)
-        elif isinstance(start, (int,float)) == True:
-            i = int(start)
-        if isinstance (too, str) == True:
-            j = self.States.index(too)
-        elif isinstance(too, (int,float)) == True:
-            j = int(too)
-        return np.linalg.matrix_power(self.ProbDist,steps)[i][j]
+        return(path)
         
-#Test
+
+
+# In[817]:
+
 
 P={'Sleep':{'Wake up':0.7,'Eat':0.3},
    'Wake up':{'Eat':1},
    'Eat':{'Sleep':0.5,'Eat':0.5}}
+S=list(P)
+
+
+# In[818]:
+
+
+M=MP(P,None,True)
+
+
+# In[821]:
+
+
+M.Simulate(10,2,False)
+
+
+# In[ ]:
 
 
 
