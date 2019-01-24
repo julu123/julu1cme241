@@ -16,25 +16,6 @@ class MP(object):
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
             else:
-                self.States=[i for i in range(len(P))]
-        else:
-            self.States=S
-        if isinstance(ProbDist, np.ndarray) == True:
-            self.ProbDist = ProbDist
-        else:
-            self.ProbDist=self.Transition_matrix_to_array(ProbDist)
-        self.print_text=print_text
-        if self.print_text == True:
-            print('You have created a new Markov process. It has ',len(self.States), 'states.')
-    
-class MP(object):
-    #Defined by probability distribution (P) 
-    #states (S) are not required
-    def __init__(self,ProbDist:(Transitions or np.ndarray),S:States=None,print_text=False):
-        if S == None:
-            if isinstance(ProbDist, np.ndarray) == False:
-                self.States=list(ProbDist)
-            else:
                 self.States=[i for i in range(len(ProbDist))]
         else:
             self.States=S
