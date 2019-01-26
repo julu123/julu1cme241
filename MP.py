@@ -3,12 +3,12 @@
 
 
 import numpy as np
-from typing import TypeVar, Dict, List
+from typing import TypeVar, Dict, List, Tuple
 
 
 State = TypeVar('State')
 States = List[State]
-Transitions = Dict[State,Dict[State,(int or float)]]
+Transitions = Dict[State,Tuple[State,(int or float)]]
 
 
 class MP(object):
@@ -50,7 +50,7 @@ class MP(object):
         elif choice == 'array':
             return output_array
             
-    def Simulate(self,steps,start:State=None,print_text=None):
+    def Simulate(self,steps:int=10,start:State=None,print_text=None):
         if start == None:
             start = self.States[0]
         elif isinstance(start, (int,float)) == True:
@@ -84,7 +84,6 @@ class MP(object):
         elif isinstance(too, (int,float)) == True:
             j = int(too)
         return np.linalg.matrix_power(self.ProbDist,steps)[i][j]
-
 
 
 
