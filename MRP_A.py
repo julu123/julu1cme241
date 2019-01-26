@@ -20,7 +20,7 @@ class MRP_A(MP):
                 self.States=[i for i in range(len(ProbDist))]
         else:
             self.States=S
-        if R == True:
+        if np.all(R) == None:
             Rew=[]
             for i in ProbDist:
                 for j in ProbDist[i]:
