@@ -5,14 +5,14 @@
 
 
 import numpy as np
-from typing import TypeVar, Dict, List
+from typing import TypeVar, Dict, List, Tuple
 
 Transitions_rewards = Dict[Transitions,(float or int)] # For A where each state has a R(s) 
-Rewards = List[float]
+R_A = List[float]
 
 
 class MRP_A(MP):
-    def __init__(self,ProbDist:(Transitions_rewards or np.ndarray),gamma:float=1,R:Rewards=None, S:States=None, print_text=False):
+    def __init__(self,ProbDist:(Transitions_rewards or np.ndarray),gamma:float=1,R:R_A=None, S:States=None, print_text=False):
         if S == None:
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
@@ -20,7 +20,7 @@ class MRP_A(MP):
                 self.States=[i for i in range(len(ProbDist))]
         else:
             self.States=S
-        if R == None:
+        if R == True:
             Rew=[]
             for i in ProbDist:
                 for j in ProbDist[i]:
@@ -28,17 +28,20 @@ class MRP_A(MP):
                         Rew.append(j)
             self.Rewards = Rew
         else:
-            self.Rewards = Rewards
-        self.ProbDist=self.Get_ProbDist(ProbDist)
+            assert len(R) == len(self.States)
+            self.Rewards = R
+        if isinstance(ProbDist, np.ndarray) == True:
+            self.ProbDist = ProbDist
+        else:
+            self.ProbDist=self.Get_ProbDist(ProbDist)
         self.gamma=gamma
         self.print_text=print_text
         
     def Get_Value_Function(self,n:int=None):
         if np.linalg.det(self.ProbDist) > 1e-5:
-            print("yolo")
             R=np.dot(self.ProbDist,self.Rewards)
             inverse=np.linalg.inv(np.identity(len(self.States))-self.gamma*self.ProbDist)
-            return(np.dot(inverse,R))
+            return(list(np.dot(inverse,R)))
         else:
             print("Determinant Zero -- wait for simulation")
             VF=np.zeros((len(self.States),1))
@@ -72,6 +75,12 @@ class MRP_A(MP):
         if print_text == True:
             print('The path Resulted in a value of ', float(accumulated_reward))
         return(float(accumulated_reward))
+    
+    def Look_Up_Reward(self,start:State):
+        if isinstance(start, (int,float)) == True:
+            return self.Rewards[start]
+        else:
+            return self.Rewards[self.States.index(start)]
     
     
     
