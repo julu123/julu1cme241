@@ -3,10 +3,10 @@
 
 PR=Tuple[(float or int),(float or int)]
 Transitions_rewards_B = Dict[State,Dict[State,PR]]
-Rewards_B = List[List[float]]
+R_B = List[List[(float or int)]]
 
 class MRP_B(MP):
-    def __init__(self,ProbDist:(Transitions_rewards_B or np.ndarray),gamma:float=1,R:Rewards_B=None, S:States=None, print_text=False):
+    def __init__(self,ProbDist:(Transitions_rewards_B or np.ndarray),gamma:float=1,R:R_B=None, S:States=None, print_text=False):
         if S == None:
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
@@ -16,8 +16,9 @@ class MRP_B(MP):
             self.States=S
         if R == None:
             self.Rewards=self.Get_Reward_matrix(ProbDist)
-        else: 
-            self.Rewards=Rewards   
+        else:
+            assert len(R) == len(self.States)
+            self.Rewards=R   
         if isinstance(ProbDist, np.ndarray) == True:
             self.ProbDist = ProbDist
         else:
@@ -42,8 +43,9 @@ class MRP_B(MP):
         return(Trans_mat)
     
     def Convert_to_A(self):
-        Rewards=np.sum((np.multiply(self.ProbDist,self.Rewards)),axis=0,keepdims=True)
-        return(Rewards.T)
+        rewards=np.sum((np.multiply(self.ProbDist,self.Rewards)),axis=1,keepdims=True)
+        rew=[float(i) for i in rewards]
+        return(MRP_A(self.ProbDist,self.gamma,rew,self.States))
 
        
 #Test    
