@@ -12,7 +12,11 @@ R_A = List[float]
 
 
 class MRP_A(MP):
-    def __init__(self,ProbDist:(Transitions_rewards or np.ndarray),gamma:float=1,R:R_A=None, S:States=None, print_text=False):
+    def __init__(self,ProbDist:(Transitions_rewards or np.ndarray),
+                 gamma:float=1,
+                 R:R_A=None,
+                 S:States=None,
+                 print_text=False):
         if S == None:
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
@@ -82,8 +86,7 @@ class MRP_A(MP):
         else:
             return self.Rewards[self.States.index(start)]
     
-    
-    
+
 #Test    
 P:Transitions_rewards={
    'C1':({'C2':0.5, 'FB':0.5},-2),
