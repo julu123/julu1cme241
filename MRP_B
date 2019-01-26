@@ -6,7 +6,11 @@ Transitions_rewards_B = Dict[State,Dict[State,PR]]
 R_B = List[List[(float or int)]]
 
 class MRP_B(MP):
-    def __init__(self,ProbDist:(Transitions_rewards_B or np.ndarray),gamma:float=1,R:R_B=None, S:States=None, print_text=False):
+    def __init__(self,ProbDist:(Transitions_rewards_B or np.ndarray),
+                 gamma:float=1,
+                 R:(R_B or np.ndarray)=None,
+                 S:States=None,
+                 print_text=False):
         if S == None:
             if isinstance(ProbDist, np.ndarray) == False:
                 self.States=list(ProbDist)
@@ -14,7 +18,7 @@ class MRP_B(MP):
                 self.States=[i for i in range(len(ProbDist))]
         else:
             self.States=S
-        if R == None:
+        if np.all(R) == None:
             self.Rewards=self.Get_Reward_matrix(ProbDist)
         else:
             assert len(R) == len(self.States)
