@@ -28,6 +28,11 @@ class MDP_B(MRP_B):
                     ProbDist[list(self.all_info).index(i)][list(self.all_info).index(k)] += (self.all_info[i][j][k][0]*Pol[i][j])
                     rew[list(self.all_info).index(i)][list(self.all_info).index(k)] += (self.all_info[i][j][k][1]*Pol[i][j])
         return(MRP_B(ProbDist,self.gamma,rew,self.States))
+    
+    def Convert_to_A(self):
+        ProbDist_A= {i:{j:({k:self.all_info[i][j][k][0] for k in self.all_info[i][j]},
+                           sum(list({self.all_info[i][j][k][0]*self.all_info[i][j][k][1] for k in self.all_info[i][j]}))) for j in self.all_info[i]} for i in self.all_info}
+        return(MDP_A(ProbDist_A,self.gamma))
 
 
 #Test -- (Same Policy as for MDP_A)
