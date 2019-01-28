@@ -26,15 +26,15 @@ class MDP_A(MRP_A):
         rewards = [float(i) for i in rew]
         return(MRP_A(ProbDist,self.gamma,rewards,self.States))
     
-    def Get_Optimal_Value_Function(self,treshold:float=1e-3): #This is Value the Iteration
+    def Get_Optimal_Value_Function(self,treshold:float=1e-4): #This is Value the Iteration
         V0 = dict([(s,0) for s in self.States])
         while True:
             Vk = V0.copy()
             delta = 0
             for s in self.States:
-                V0[s] = max([sum([self.all_info[s][a][1] + self.gamma*self.all_info[s][a][0][k]*Vk[k]
-                                                for k in self.all_info[s][a][0]])
-                                           for a in self.all_info[s]])
+                V0[s] = max(self.all_info[s][a][1]+sum([self.gamma*self.all_info[s][a][0][k]*Vk[k] 
+                            for k in self.all_info[s][a][0]]) 
+                            for a in self.all_info[s])
                 delta = max(delta,abs(Vk[s]-V0[s]))
             if delta < treshold*(1-self.gamma)/self.gamma:
                 break
