@@ -34,7 +34,21 @@ class MDP_B(MRP_B):
                            sum(list({self.all_info[i][j][k][0]*self.all_info[i][j][k][1] for k in self.all_info[i][j]}))) for j in self.all_info[i]} for i in self.all_info}
         return(MDP_A(ProbDist_A,self.gamma))
 
-
+    def Get_Optimal_Value_Function(self,treshold:float=1e-3): #This is Value the Iteration
+        V0 = dict([(s,0) for s in self.States])
+        while True:
+            Vk = V0.copy()
+            delta = 0
+            for s in self.States:
+                V0[s] = max([sum([self.all_info[s][a][k][1] + self.gamma*self.all_info[s][a][k][0]*Vk[k]
+                                                for k in self.all_info[s][a]])
+                                           for a in self.all_info[s]])
+                delta = max(delta,abs(Vk[s]-V0[s]))
+            if delta < treshold*(1-self.gamma)/self.gamma:
+                break
+        return Vk
+    
+    
 #Test -- (Same Policy as for MDP_A)
 P:Transitions_Rewards_Action_B={
     'Food':{
@@ -51,17 +65,3 @@ P:Transitions_Rewards_Action_B={
         'b':{'Food':(1/3,-3),'Sleep':(1/3,-4),'Game':(1/3,-5)}
     }
 }
-
-    def Get_Optimal_Value_Function(self,treshold:float=1e-3): #This is Value the Iteration
-        V0 = dict([(s,0) for s in self.States])
-        while True:
-            Vk = V0.copy()
-            delta = 0
-            for s in self.States:
-                V0[s] = max([sum([self.all_info[s][a][k][1] + self.gamma*self.all_info[s][a][k][0]*Vk[k]
-                                                for k in self.all_info[s][a]])
-                                           for a in self.all_info[s]])
-                delta = max(delta,abs(Vk[s]-V0[s]))
-            if delta < treshold*(1-self.gamma)/self.gamma:
-                break
-        return Vk
