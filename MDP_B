@@ -52,3 +52,16 @@ P:Transitions_Rewards_Action_B={
     }
 }
 
+    def Get_Optimal_Value_Function(self,treshold:float=1e-3): #This is Value the Iteration
+        V0 = dict([(s,0) for s in self.States])
+        while True:
+            Vk = V0.copy()
+            delta = 0
+            for s in self.States:
+                V0[s] = max([sum([self.all_info[s][a][k][1] + self.gamma*self.all_info[s][a][k][0]*Vk[k]
+                                                for k in self.all_info[s][a]])
+                                           for a in self.all_info[s]])
+                delta = max(delta,abs(Vk[s]-V0[s]))
+            if delta < treshold*(1-self.gamma)/self.gamma:
+                break
+        return Vk
