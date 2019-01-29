@@ -40,6 +40,29 @@ class MDP_A(MRP_A):
                 break
         return Vk   
     
+    def Get_Optimal_Policy(self,pol:Policy,Value_function,treshold:float=1e-4):
+        V0 = dict([(s,0) for s in self.States])
+        pi=pol
+        while True:
+            Vk=V0.copy()
+            delta=0
+            for s in self.States:
+                actlist=dict([(a,0) for a in self.all_info[s]])
+                #print(actlist)
+                for a in self.all_info[s]:
+                    test=0
+                    for j in self.all_info[s][a][0]:
+                        test += self.all_info[s][a][0][j]*(self.all_info[s][a][1]+self.gamma*Vk[j])
+                        actlist[a] += self.all_info[s][a][0][j]*(self.all_info[s][a][1]+self.gamma*Vk[j])
+                pi[s]=max(actlist, key=actlist.get)
+                V0[s]=actlist[pi[s]]
+                #print(actlist)
+                #print(pi[s])
+                delta = max(delta,abs(Vk[s]-V0[s]))
+            if delta < treshold*(1-self.gamma)/self.gamma and sum([(V0[s]-Value_function[s])**2 for s in self.States]) < treshold:
+                break
+        return {i:{j:(1 if pi[i]== j else 0) for j in self.all_info[i]} for i in self.all_info}
+    
     def Policy_Evaluation(self,Pol:Policy):
         mrp=self.Get_MRP(Pol)
         return mrp.Get_Value_Function()
