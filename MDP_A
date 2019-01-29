@@ -2,18 +2,24 @@
 # coding: utf-8
 
 import numpy as np
-from typing import TypeVar, Dict, List, Tuple
+from typing import TypeVar, Dict, List
 
 Action = TypeVar('Action')
-Transitions_Rewards_Action_A=Dict[State,Dict[Action,Dict[Tuple[State,(float or int)],(float or int)]]]
-Policy = Dict[State,Tuple[Action,(float or int)]]
+Transitions_Rewards_Action_A=Dict[State,Dict[Action,Dict[Dict[State,(float or int)],(float or int)]]]
+Policy = Dict[State,Dict[Action,(float or int)]]
 
 class MDP_A(MRP_A):
+    import operator
     def __init__(self,ProbDist:Transitions_Rewards_Action_A=None,gamma:float=1):
         self.States=list(ProbDist)
         self.gamma=gamma
         self.all_info=ProbDist
-        pass
+        actions=[]
+        for i in P:
+            for j in P[i]:
+                actions.append(j)
+        self.Actions=sorted(list(set(actions)))
+        self.Actiondict={i:{k for k in self.all_info[i]} for i in self.all_info}
     
     def Get_MRP(self,Pol:Policy):
         ProbDist=np.zeros((len(self.States),len(self.States)))
@@ -25,7 +31,7 @@ class MDP_A(MRP_A):
                     ProbDist[list(self.all_info).index(i)][list(self.all_info).index(k)] += (self.all_info[i][j][0][k]*Pol[i][j])
         rewards = [float(i) for i in rew]
         return(MRP_A(ProbDist,self.gamma,rewards,self.States))
-    
+                    
     def Get_Optimal_Value_Function(self,treshold:float=1e-4): #This is Value the Iteration
         V0 = dict([(s,0) for s in self.States])
         while True:
@@ -38,9 +44,29 @@ class MDP_A(MRP_A):
                 delta = max(delta,abs(Vk[s]-V0[s]))
             if delta < treshold*(1-self.gamma)/self.gamma:
                 break
-        return Vk   
+        return Vk     
+        
+    def Policy_Evaluation(self,Pol:Policy,easy=False,treshold:float=1e-4): #Not final
+        mrp=self.Get_MRP(Pol)
+        if easy == True:
+            return mrp.Get_Value_Function()
+        else: 
+            V0 = dict([(s,0) for s in self.States])
+            while True:
+                Vk = V0.copy()
+                delta = 0
+                for s in self.States:
+                    V0[s] = mrp.Rewards[self.States.index(s)] + self.gamma*sum([mrp.ProbDist[self.States.index(s)][self.States.index(k)]*Vk[k] for k in self.States])
+                delta = max(delta,abs(Vk[s]-V0[s]))
+                if delta < treshold*(1-self.gamma)/self.gamma:
+                    break
+        return Vk
     
-    def Get_Optimal_Policy(self,pol:Policy,Value_function,treshold:float=1e-4):
+    def Get_Optimal_Policy(self,pol:Policy=None,Value_function=None,treshold:float=1e-4):
+        if pol == None:
+            pol = {i:{j:1/len(self.States) for j in self.all_info[i]} for i in self.all_info}
+        if Value_function == None:
+            Value_function = self.Get_Optimal_Value_Function()
         V0 = dict([(s,0) for s in self.States])
         pi=pol
         while True:
@@ -62,10 +88,6 @@ class MDP_A(MRP_A):
             if delta < treshold*(1-self.gamma)/self.gamma and sum([(V0[s]-Value_function[s])**2 for s in self.States]) < treshold:
                 break
         return {i:{j:(1 if pi[i]== j else 0) for j in self.all_info[i]} for i in self.all_info}
-    
-    def Policy_Evaluation(self,Pol:Policy):
-        mrp=self.Get_MRP(Pol)
-        return mrp.Get_Value_Function()
       
 #Test
 P:Transitions_Rewards_Action_A={
