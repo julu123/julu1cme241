@@ -77,7 +77,7 @@ class Gambler(MDP_B):
       
       
 class Grid_World(MDP_B):
-    def __init__(self,gamma:float=099):
+    def __init__(self,gamma:float=0.99):
       self.gammma=gamma
       MDP_B.__init__(self,self.Get_info(),self.gamma)
       
