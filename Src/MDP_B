@@ -3,6 +3,7 @@
 
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
+from MRP_B import MRP_B
 
 Transitions_Rewards_Action_B=Dict[State,Dict[Action,Tuple[State,PR]]]
 

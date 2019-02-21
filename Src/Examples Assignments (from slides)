@@ -2,6 +2,9 @@
 # coding: utf-8
 
 from scipy.stats import poisson
+from MDP_B import MDP_B
+
+
 class Jack_car(MDP_B):
     def __init__(self,statex:int=20,statey:int=20,move_max:int=5,gamma:float=0.99,reward:float=10,lambdx:float=4,lambdy:float=3,retx:float=2,rety:float=3):
         self.lx=lambdx

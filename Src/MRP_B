@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+
+import numpy as np
+from typing import TypeVar, Dict, List, Tuple
+from MP import MP
+
 PR=Tuple[(float or int),(float or int)]
 Transitions_rewards_B = Dict[State,Dict[State,PR]]
 R_B = List[List[(float or int)]]
+
 
 class MRP_B(MP):
     def __init__(self,ProbDist:(Transitions_rewards_B or np.ndarray),
