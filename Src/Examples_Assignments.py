@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 from scipy.stats import poisson
 from MDP_B import MDP_B
 

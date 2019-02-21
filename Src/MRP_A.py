@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[776]:
-
-
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
 from MP import MP

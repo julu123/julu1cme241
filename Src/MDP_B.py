@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
 from MRP_B import MRP_B

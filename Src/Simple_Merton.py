@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 class Simple_Merton(MDP_A):
     def __init__(self,risk_aversion:float,mu:float,sigma:float,r:float,wealth:(float or int),steps:int,discount:float):
         self.a = risk_aversion
