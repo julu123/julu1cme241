@@ -48,7 +48,7 @@ class MDP_B(MRP_B):
         return Vk
     
     
-#Test -- (Same Policy as for MDP_A)
+#Test -- (Same Policy as for MDP_A.py)
 P:Transitions_Rewards_Action_B={
     'Food':{
         'a':{'Food':(0.4,1), 'Game':(0.6,2)},
