@@ -4,10 +4,7 @@
 import numpy as np
 from typing import TypeVar, Dict, List
 from MRP_A import MRP_A
-
-Action = TypeVar('Action')
-Transitions_Rewards_Action_A=Dict[State,Dict[Action,Dict[Dict[State,(float or int)],(float or int)]]]
-Policy = Dict[State,Dict[Action,(float or int)]]
+from Variables import State, States, R_A, Transitions,Action, Transitions_Rewards_Action_A, Policy
 
 class MDP_A(MRP_A):
     def __init__(self,ProbDist:Transitions_Rewards_Action_A=None,gamma:float=1):

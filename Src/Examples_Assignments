@@ -85,39 +85,39 @@ class Grid_World(MDP_B):
       MDP_B.__init__(self,self.Get_info(),self.gamma)
       
     def Get_info(self):
-    test={str(10*(i+1)+j+1):0 for i in range(5) for j in range(5)}
-    for i in test:
-        Up = int(i) if int(i)<=15 else int(i)-10
-        Left = int(i) if int(i)%10 == 1 else int(i)-1
-        Right = int(i) if int(i)%10 == 5 else int(i)+1
-        Down = int(i) if int(i)>=51 else int(i)+10
-        RU = -1 if int(i) <= 15 else 0
-        RL = -1 if int(i)%10 == 1 else 0
-        RR = -1 if int(i)%10 == 5 else 0
-        RD = -1 if int(i)>=51 else 0
-        if int(i) == 12:
-            Up = 52
-            Left = Up
-            Right = Up
-            Down = Up
-            RU = 10
-            RL = RU
-            RR = RU
-            RD = RU
-        if int(i)==14:
-            Up = 34
-            Left = Up
-            Right = Up
-            Down = Up
-            RU = 5
-            RL = RU
-            RR = RU
-            RD = RU
-        test[i]={'Up':({str(Up):1},RU),
-                'Left':({str(Left):1},RL),
-                'Right':({str(Right):1},RR),
-                'Down':({str(Down):1},RD)
-               }
-    return test
+        test={str(10*(i+1)+j+1):0 for i in range(5) for j in range(5)}
+        for i in test:
+            Up = int(i) if int(i)<=15 else int(i)-10
+            Left = int(i) if int(i)%10 == 1 else int(i)-1
+            Right = int(i) if int(i)%10 == 5 else int(i)+1
+            Down = int(i) if int(i)>=51 else int(i)+10
+            RU = -1 if int(i) <= 15 else 0
+            RL = -1 if int(i)%10 == 1 else 0
+            RR = -1 if int(i)%10 == 5 else 0
+            RD = -1 if int(i)>=51 else 0
+            if int(i) == 12:
+                Up = 52
+                Left = Up
+                Right = Up
+                Down = Up
+                RU = 10
+                RL = RU
+                RR = RU
+                RD = RU
+            if int(i)==14:
+                Up = 34
+                Left = Up
+                Right = Up
+                Down = Up
+                RU = 5
+                RL = RU
+                RR = RU
+                RD = RU
+            test[i]={'Up':({str(Up):1},RU),
+                    'Left':({str(Left):1},RL),
+                    'Right':({str(Right):1},RR),
+                    'Down':({str(Down):1},RD)
+                   }
+        return test
 
 

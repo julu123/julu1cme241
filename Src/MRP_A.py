@@ -7,9 +7,7 @@
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
 from MP import MP
-
-Transitions_rewards = Dict[Transitions,(float or int)] # For A where each state has a R(s) 
-R_A = List[float]
+from Variables import State, States, Transitions, Transitions_rewards, R_A
 
 
 class MRP_A(MP):

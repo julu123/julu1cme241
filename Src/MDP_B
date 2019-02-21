@@ -4,9 +4,7 @@
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
 from MRP_B import MRP_B
-
-Transitions_Rewards_Action_B=Dict[State,Dict[Action,Tuple[State,PR]]]
-
+from Variables import State, States, Transitions, PR, Transitions_rewards_B, R_B, Action, Policy, Transitions_Rewards_Action_B
 
 class MDP_B(MRP_B):
     def __init__(self,ProbDist:Transitions_Rewards_Action_B=None,gamma:float=1):
