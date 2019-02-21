@@ -118,6 +118,6 @@ class Grid_World(MDP_B):
                 'Right':({str(Right):1},RR),
                 'Down':({str(Down):1},RD)
                }
-        return test
+    return test
 
 

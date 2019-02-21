@@ -4,11 +4,7 @@
 
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
-
-
-State = TypeVar('State')
-States = List[State]
-Transitions = Dict[State,Tuple[State,(int or float)]]
+from Variables import State, States, Transitions
 
 
 class MP(object):
