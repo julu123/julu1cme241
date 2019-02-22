@@ -21,3 +21,7 @@ Policy = Dict[State,Dict[Action,(float or int)]]
 
 #MDP_B
 Transitions_Rewards_Action_B=Dict[State,Dict[Action,Tuple[State,PR]]]
+
+#Tabular_base
+SA = Tuple[State, Action]
+SR = Tuple[State, (float or int)]

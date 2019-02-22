@@ -26,6 +26,8 @@ Pol = {
 #print(len(test.generate_path('Food', Pol)[1]))
 #print(len(test.generate_path('Food', Pol)[2]))
 
-test = Tabular_MC(MDP_A(P), Pol)
+#test = Tabular_MC(MDP_A(P), Pol)
 
+print(European_option(0.25, 0.5, 0.05).binomial_tree_price(100, 110, "Put"))
 
+print(European_option(0.25, 0.5, 0.05).longstaff_schartz(100,110))

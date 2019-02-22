@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a6956881-e8f4-4fc5-b82c-e4b418f8b027" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/justinlundgren.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Src/Options.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/MDP_A.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/MDP_A.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Src/MRP_B.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/MRP_B.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/Options.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Options.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Src/Variables.py" beforeDir="false" afterPath="$PROJECT_DIR$/Src/Variables.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,8 +18,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/Main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="165">
-              <caret line="28" selection-start-line="28" selection-end-line="28" />
+            <state relative-caret-position="225">
+              <caret line="32" column="63" lean-forward="true" selection-start-line="32" selection-start-column="63" selection-end-line="32" selection-end-column="63" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#56#425#0" />
@@ -32,14 +29,32 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            <state>
+              <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Src/Options.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="588">
+              <caret line="52" column="50" lean-forward="true" selection-start-line="52" selection-start-column="50" selection-end-line="52" selection-end-column="50" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Src/Variables.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="390">
+              <caret line="26" column="33" lean-forward="true" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
             </state>
           </provider>
         </entry>
@@ -67,14 +82,14 @@
         <option value="$PROJECT_DIR$/Src/MP.py" />
         <option value="$PROJECT_DIR$/Src/Simple_Merton.py" />
         <option value="$PROJECT_DIR$/Src/Examples_Assignments.py" />
-        <option value="$PROJECT_DIR$/Src/Variables.py" />
         <option value="$PROJECT_DIR$/Src/MRP_A.py" />
         <option value="$PROJECT_DIR$/Src/MDP_A.py" />
         <option value="$PROJECT_DIR$/Src/MRP_B.py" />
-        <option value="$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py" />
         <option value="$PROJECT_DIR$/Src/MDP_B.py" />
-        <option value="$PROJECT_DIR$/Src/Options.py" />
+        <option value="$PROJECT_DIR$/Src/Variables.py" />
+        <option value="$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py" />
         <option value="$PROJECT_DIR$/Src/Main.py" />
+        <option value="$PROJECT_DIR$/Src/Options.py" />
       </list>
     </option>
   </component>
@@ -205,7 +220,7 @@
       <window_info anchor="bottom" id="Message" order="3" />
       <window_info anchor="bottom" id="Find" order="4" weight="0.32971507" />
       <window_info anchor="bottom" id="Version Control" order="5" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.2686747" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.2686747" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.39891452" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -227,13 +242,6 @@
           <folding>
             <element signature="e#39#70#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Src/Variables.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
         </state>
       </provider>
     </entry>
@@ -282,16 +290,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Src/Options.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="41" column="12" lean-forward="true" selection-start-line="41" selection-start-column="12" selection-end-line="41" selection-end-column="12" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Src/MRP_B.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="305">
@@ -302,10 +300,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Src/Variables.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="26" column="33" lean-forward="true" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Src/Main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="28" selection-start-line="28" selection-end-line="28" />
+        <state relative-caret-position="225">
+          <caret line="32" column="63" lean-forward="true" selection-start-line="32" selection-start-column="63" selection-end-line="32" selection-end-column="63" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#56#425#0" />
@@ -316,8 +321,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Src/Tabular_RL_Algorithms.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        <state>
+          <caret column="18" lean-forward="true" selection-start-column="18" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Src/Options.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="588">
+          <caret line="52" column="50" lean-forward="true" selection-start-line="52" selection-start-column="50" selection-end-line="52" selection-end-column="50" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

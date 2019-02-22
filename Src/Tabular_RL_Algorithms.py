@@ -1,7 +1,13 @@
 import numpy as np
-from Variables import State, Action
+from Variables import State, Action, SA, SR
 from MDP_A import MDP_A
 from MDP_B import MDP_B
+
+
+
+class Tabular_base:
+    def __init__(self,):
+        pass
 
 class Tabular_MC:
     def __init__(self, mdp: (MDP_A or MDP_B), pol, mdp_type: str = "A"):

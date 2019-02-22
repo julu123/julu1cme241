@@ -17,10 +17,10 @@ class European_option:
             return norm.cdf(-d2)*strike*np.exp(-self.rf*self.maturity)-norm.cdf(-d1)*stock_price
 
     def binomial_tree_price(self, stock_price: float, strike: float, type: str = "Call", n: int = 200):
-        t = self.maturity/n
-        u = np.exp(self.sigma*np.sqrt(t))
+        dt = self.maturity/n
+        u = np.exp(self.sigma*np.sqrt(dt))
         d = 1/u
-        p = (np.exp(self.rf*t) - d)/(u-d)
+        p = (np.exp(self.rf*dt) - d)/(u-d)
         stock_matrix = np.zeros((n, n))
         price_matrix = np.zeros((n, n))
         stock_matrix[0, 0] = stock_price
@@ -35,8 +35,25 @@ class European_option:
                 price_matrix[i, n - 1] = max(strike - stock_matrix[i, n - 1], 0)
         for i in reversed(range(n-1)):
             for j in range(i+1):
-                price_matrix[j,i] = np.exp(-self.rf*t)*(p*price_matrix[j, i+1] + (1-p)*price_matrix[j+1, i+1])
+                price_matrix[j,i] = np.exp(-self.rf*dt)*(p*price_matrix[j, i+1] + (1-p)*price_matrix[j+1, i+1])
         return price_matrix[0,0]
 
-    def longstaff_schartz(self, stock_price: float, strike:float, m:int = 500, n:int = 200): #Type is an american put (no need to implement)
-        pass
+    def longstaff_schartz(self,
+                          stock_price: float,
+                          strike:float,
+                          m:int = 5,
+                          n:int = 5): #Type is an american put (no need to implement)
+        "m is the amount of simulations, n is the amount of time steps"
+        dt = self.maturity/n
+        normal_returns = norm.rvs(size=(m, 1))
+        final_returns = (self.rf - self.sigma**2/2)*self.maturity + self.sigma*np.sqrt(self.maturity)*normal_returns
+        final_prices = stock_price*np.exp(final_returns)
+        final_payoffs = np.maximum(strike-final_prices, 0)
+        for i in reversed(range(1,n)):
+            normal_returns = norm.rvs(size=(m, 1))
+            returns = (self.rf - self.sigma**2/2)*(dt*i) + self.sigma*np.sqrt(dt*i)*normal_returns
+            prices = stock_price*np.exp(returns)
+
+            in_the_money = prices > strike
+            print(in_the_money)
+        return final_payoffs
