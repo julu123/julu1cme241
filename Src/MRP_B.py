@@ -52,7 +52,7 @@ class MRP_B(MP):
 
        
 #Test    
-P:Transitions_rewards={
+P:Transitions_rewards_B={
    'C1':{'C2':(0.5,-2), 'FB':(0.5,-0.2)},
    'C2':{'C3':(0.8,-1),'Sleep':(0.2,-5)},
    'C3':{'Pass':(0.6,10/0.6),'Pub':(0.4,1/0.4)},

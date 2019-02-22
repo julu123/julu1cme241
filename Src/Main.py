@@ -1,14 +1,31 @@
-from MRP_A import MRP_A
+from MDP_A import MDP_A
+from Tabular_RL_Algorithms import Tabular_MC
+from Options import European_option
 
-P={
-   'C1':({'C2':0.5, 'FB':0.5},-2),
-   'C2':({'C3':0.8,'Sleep':0.2},-2),
-   'C3':({'Pass':0.6,'Pub':0.4},-2),
-   'Pass':({'Sleep':1},10),
-   'Pub':({'C1':0.2,'C2':0.4,'C3':0.4},1),
-   'FB':({'C1':0.1,'FB':0.9},-1),
-   'Sleep':({'Sleep':1},0)
+P = {
+    'Food':{
+        'a':({'Food':0.4, 'Game':0.6},-2),
+        'b':({'Food':1/3,'Sleep':1/3,'Game':1/3},-5),
+        'c':({'Sleep':1},0)
+    },
+    'Sleep':{
+        'a':({'Sleep':0.2, 'Game':0.8},2),
+        'c':({'Sleep':0.7, 'Game':0.3},0)
+    },
+    'Game':{
+        'a':({'Food':0.9, 'Sleep':0.1},-1),
+        'b':({'Food':1/3,'Sleep':1/3,'Game':1/3},2)
+    }
 }
+Pol = {
+    'Food':{'a':0.5,'b':0.25,'c':0.25},
+    'Sleep':{'a':0.8,'c':0.2},
+    'Game':{'a':0,'b':1}}
 
-test=MRP_A(P)
-test.Simulate_Rewards(steps=10,start='Pub',print_text=True)
+#print(len(test.generate_path('Food', Pol)[0]))
+#print(len(test.generate_path('Food', Pol)[1]))
+#print(len(test.generate_path('Food', Pol)[2]))
+
+test = Tabular_MC(MDP_A(P), Pol)
+
+
