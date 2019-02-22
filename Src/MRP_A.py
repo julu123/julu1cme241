@@ -5,7 +5,7 @@ from Variables import State, States, Transitions, Transitions_rewards, R_A
 
 
 class MRP_A(MP):
-    def __init__(self,ProbDist:(Transitions_rewards or np.ndarray),
+    def __init__(self, ProbDist:(Transitions_rewards or np.ndarray),
                  gamma:float=1,
                  R:R_A=None,
                  S:States=None,

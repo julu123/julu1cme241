@@ -53,7 +53,7 @@ class Option:
                                 p * price_matrix[j, i + 1] + (1 - p) * price_matrix[j + 1, i + 1])
         return price_matrix[0,0]
 
-    def longstaff_schartz(self,
+    def longstaff_schartz_price(self,
                           stock_price: float,
                           strike: float,
                           m: int = 10000,

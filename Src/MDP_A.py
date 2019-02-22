@@ -4,7 +4,7 @@ from MRP_A import MRP_A
 from Variables import State, States, R_A, Transitions, Action, Transitions_Rewards_Action_A, Policy
 
 class MDP_A(MRP_A):
-    def __init__(self, probdist: Transitions_Rewards_Action_A = None, gamma: float = 1):
+    def __init__(self, probdist: Transitions_Rewards_Action_A = None, gamma: float = 0.99):
         self.States=list(probdist)
         self.gamma=gamma
         self.all_info=probdist
@@ -42,7 +42,9 @@ class MDP_A(MRP_A):
             possible_states_probs.append(self.all_info[state][action][0][i])
         return possible_states, possible_states_probs, self.all_info[state][action][1]
 
-    def generate_path(self,start:State,pol:Policy,steps:int=10):
+    def generate_path(self, pol: Policy, start: State = None, steps: int = 10):
+        if start == None:
+            start = np.random.choice(self.States)
         States = [start]
         Actions = []
         Rewards = []
@@ -74,13 +76,17 @@ class MDP_A(MRP_A):
                 break
         return Vk     
         
-    def policy_Evaluation(self,Pol:Policy,easy=False,treshold:float=1e-4): #Not final
-        mrp=self.Get_MRP(Pol)
+    def policy_Evaluation(self,
+                          pol:Policy,
+                          easy=False,
+                          treshold: float = 1e-4): #Not final
+        mrp=self.get_MRP(pol)
         if easy == True:
-            return mrp.Get_Value_Function()
+            return mrp.get_Value_Function()
         else: 
-            V0 = dict([(s,0) for s in self.States])
-            while True:
+            V0 = dict([(s ,0) for s in self.States])
+            #while True:
+            for i in range(1000):
                 Vk = V0.copy()
                 delta = 0
                 for s in self.States:

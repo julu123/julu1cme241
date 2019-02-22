@@ -1,5 +1,5 @@
 from MDP_A import MDP_A
-from Tabular_RL_Algorithms import Tabular_MC
+from Tabular_RL_Algorithms import TabularMC, SarsaGenerator
 from Options import Option
 
 P = {
@@ -22,12 +22,18 @@ Pol = {
     'Sleep':{'a':0.8,'c':0.2},
     'Game':{'a':0,'b':1}}
 
+test = SarsaGenerator(P)
+print(TabularMC(Pol).first_visit(test))
+
+test2=MDP_A(P)
+print(test2.policy_Evaluation(Pol))
+
 #print(len(test.generate_path('Food', Pol)[0]))
 #print(len(test.generate_path('Food', Pol)[1]))
 #print(len(test.generate_path('Food', Pol)[2]))
 
 #test = Tabular_MC(MDP_A(P), Pol)
 
-print(Option(0.25, 0.5, 0.05).binomial_tree_price(100, 110, "Put", "American"))
+#print(Option(0.25, 0.5, 0.05).binomial_tree_price(100, 110, "Put", "American"))
 
-print(Option(0.25, 0.5, 0.05).longstaff_schartz(100,110))
+#print(Option(0.25, 0.5, 0.05).longstaff_schartz_price(100,110))
