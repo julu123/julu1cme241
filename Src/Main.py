@@ -1,6 +1,6 @@
 from MDP_A import MDP_A
 from Tabular_RL_Algorithms import Tabular_MC
-from Options import European_option
+from Options import Option
 
 P = {
     'Food':{
@@ -28,6 +28,6 @@ Pol = {
 
 #test = Tabular_MC(MDP_A(P), Pol)
 
-print(European_option(0.25, 0.5, 0.05).binomial_tree_price(100, 110, "Put"))
+print(Option(0.25, 0.5, 0.05).binomial_tree_price(100, 110, "Put", "American"))
 
-print(European_option(0.25, 0.5, 0.05).longstaff_schartz(100,110))
+print(Option(0.25, 0.5, 0.05).longstaff_schartz(100,110))
