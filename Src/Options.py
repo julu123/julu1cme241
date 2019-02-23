@@ -2,6 +2,7 @@ import numpy as np
 from scipy.stats import norm
 from scipy.stats import linregress
 
+
 class Option:
     def __init__(self, sigma: float, maturity: float, rf: float):
         self.sigma = sigma

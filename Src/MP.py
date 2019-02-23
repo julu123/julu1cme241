@@ -66,7 +66,7 @@ class MP(object):
             print("The path was:", path)
         return path
     
-    def Look_up(self,start:State,too:State,steps:int=1):
+    def Look_up(self, start: State, too: State, steps: int = 1):
         if isinstance (start, str) == True:
             i = self.States.index(start)
         elif isinstance(start, (int,float)) == True:
@@ -75,7 +75,4 @@ class MP(object):
             j = self.States.index(too)
         elif isinstance(too, (int,float)) == True:
             j = int(too)
-        return np.linalg.matrix_power(self.ProbDist,steps)[i][j]
-
-
-
+        return np.linalg.matrix_power(self.ProbDist, steps)[i][j]

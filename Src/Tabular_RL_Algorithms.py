@@ -38,4 +38,3 @@ class TabularMC(TabularBase):
         for i in v0:
             v0[i] = v0[i]/g0[i]
         return v0
-
