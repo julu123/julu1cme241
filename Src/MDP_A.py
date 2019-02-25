@@ -49,22 +49,32 @@ class MDP_A(MRP_A):
         States = [start]
         Actions = []
         Rewards = []
-        current_state=start
-        i=0
+        current_state = start
+        i = 0
         while i <= steps:
             i += 1
             actions, act_dist=self.genarate_action_dist(current_state, pol)
             act = np.random.choice(actions, replace=True, p=act_dist)
             Actions.append(act)
+
             states, state_dist, rew = self.generate_state_dist(current_state, act)
             Rewards.append(rew)
             state = np.random.choice(states, replace=True, p=state_dist)
             States.append(state)
+
             current_state = state
+            path_counter = 0
+            for a in self.all_info[current_state]:
+                for s in self.all_info[current_state][a][0]:
+                    if s == current_state:
+                        path_counter += self.all_info[current_state][a][0][s] * pol[current_state][a]
+            if path_counter == 1:
+                i = steps + 1
+                print('Termination at state:', current_state)
         return States, Actions, Rewards
 
-    def get_Optimal_Value_Function(self,treshold:float=1e-4): #This is Value the Iteration
-        V0 = dict([(s,0) for s in self.States])
+    def get_optimal_value_function(self, threshold: float = 1e-4): #This is Value the Iteration
+        V0 = dict([(s, 0) for s in self.States])
         while True:
             Vk = V0.copy()
             delta = 0
@@ -72,54 +82,52 @@ class MDP_A(MRP_A):
                 V0[s] = max(self.all_info[s][a][1]+sum([self.gamma*self.all_info[s][a][0][k]*Vk[k] 
                             for k in self.all_info[s][a][0]]) 
                             for a in self.all_info[s])
-                delta = max(delta,abs(Vk[s]-V0[s]))
-            if delta < treshold*(1-self.gamma)/self.gamma:
+                delta = max(delta, abs(Vk[s]-V0[s]))
+            if delta < threshold*(1-self.gamma)/self.gamma:
                 break
         return Vk     
         
-    def policy_Evaluation(self,
-                          pol:Policy,
+    def policy_evaluation(self,
+                          pol: Policy,
                           easy=False,
-                          treshold: float = 1e-4):
-        mrp=self.get_MRP(pol)
-        if easy == True:
+                          threshold: float = 1e-4):
+        mrp = self.get_MRP(pol)
+        if easy is True:
             return mrp.get_Value_Function()
         else: 
-            V0 = dict([(s ,0) for s in self.States])
+            V0 = dict([(s, 0) for s in self.States])
             while True:
             #for i in range(1000):
                 Vk = V0.copy()
                 delta = 0
                 for s in self.States:
                     V0[s] = mrp.Rewards[self.States.index(s)] + self.gamma*sum([mrp.ProbDist[self.States.index(s)][self.States.index(k)]*Vk[k] for k in self.States])
-                delta = max(delta,abs(Vk[s]-V0[s]))
-                if delta < treshold*(1-self.gamma)/self.gamma:
+                delta = max(delta, abs(Vk[s]-V0[s]))
+                if delta < threshold*(1-self.gamma)/self.gamma:
                     break
         return Vk
     
-    def get_Optimal_Policy(self, pol: Policy = None, Value_function = None, treshold: float = 1e-4):
+    def get_optimal_policy(self, pol: Policy = None, Value_function = None, threshold: float = 1e-4):
         if pol == None:
             pol = {i:{j:1/len(self.States) for j in self.all_info[i]} for i in self.all_info}
         if Value_function == None:
-            Value_function = self.Get_Optimal_Value_Function()
+            Value_function = self.get_optimal_value_function()
         V0 = dict([(s,0) for s in self.States])
         pi = pol
         while True:
             Vk = V0.copy()
             delta = 0
             for s in self.States:
-                actlist=dict([(a,0) for a in self.all_info[s]])
+                actlist = dict([(a, 0) for a in self.all_info[s]])
                 for a in self.all_info[s]:
-                    test=0
                     for j in self.all_info[s][a][0]:
-                        test += self.all_info[s][a][0][j]*(self.all_info[s][a][1]+self.gamma*Vk[j])
                         actlist[a] += self.all_info[s][a][0][j]*(self.all_info[s][a][1]+self.gamma*Vk[j])
-                pi[s]=max(actlist, key=actlist.get)
-                V0[s]=actlist[pi[s]]
-                delta = max(delta,abs(Vk[s]-V0[s]))
-            if delta < treshold*(1-self.gamma)/self.gamma and sum([(V0[s]-Value_function[s])**2 for s in self.States]) < treshold:
+                pi[s] = max(actlist, key=actlist.get)
+                V0[s] = actlist[pi[s]]
+                delta = max(delta, abs(Vk[s]-V0[s]))
+            if delta < threshold*(1-self.gamma)/self.gamma and sum([(V0[s]-Value_function[s])**2 for s in self.States]) < threshold:
                 break
-        return {i:{j:(1 if pi[i]== j else 0) for j in self.all_info[i]} for i in self.all_info}
+        return {i: {j: (1 if pi[i] == j else 0) for j in self.all_info[i]} for i in self.all_info}
       
 #Test
 P:Transitions_Rewards_Action_A={
