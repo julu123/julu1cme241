@@ -39,13 +39,16 @@ pol = {
 op_pol = MDP_B(P).get_optimal_policy()
 #print(op_pol)
 #print(MDP_B(P).get_optimal_value_function())
-
+print('DP:')
 print(MDP_B(P).policy_evaluation(pol))
 random.seed(1)
+print('TD0:')
 print(PredictionMethods(P, pol).td_zero())
 random.seed(1)
-print(PredictionMethods(P, pol).td_lambda(method="Backward"))
+print('TD-lambda:')
+print(PredictionMethods(P, pol).td_lambda())
 random.seed(1)
+print('MCFV:')
 print(PredictionMethods(P, pol).monte_carlo_first_visit())
 
 
