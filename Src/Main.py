@@ -1,10 +1,9 @@
 from MDP_A import MDP_A
 from MDP_B import MDP_B
-from Tabular_RL_Algorithms import TabularBase, TabularMC
+from Tabular_RL_Algorithms import PredictionMethods
 from Options import Option
-from hw6211 import Question61
-
-q = MDP_B(Question61().info)
+import random
+#q = MDP_B(Question61().info)
 #print(q.convert_to_A().get_optimal_value_function())
 #print(q.convert_to_A().get_optimal_policy())
 n = 400
@@ -40,11 +39,18 @@ pol = {
 op_pol = MDP_B(P).get_optimal_policy()
 #print(op_pol)
 #print(MDP_B(P).get_optimal_value_function())
-#print(MDP_B(P).policy_evaluation(op_pol))
+
+print(MDP_B(P).policy_evaluation(pol))
+random.seed(1)
+print(PredictionMethods(P, pol).td_zero())
+random.seed(1)
+print(PredictionMethods(P, pol).td_lambda(method="Backward"))
+random.seed(1)
+print(PredictionMethods(P, pol).monte_carlo_first_visit())
 
 
-print(TabularMC(P, pol, 0.99).first_visit())
-print(MDP_B(P, 0.99).policy_evaluation(pol))
+
+#print(MDP_B(P).policy_evaluation(pol))
 
 #print(MDP_B(P).generate_path(Pol, steps=100))
 

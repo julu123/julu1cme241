@@ -102,18 +102,15 @@ class MDP_B(MRP_B):
             print('method not yet developed. lol')
         else:
             v0 = dict([(s, 0) for s in self.States])
-            #print(mrp.Rewards)
-            #print(mrp.ProbDist)
-            #while True:
-            #print(mrp.Rewards)
-            for i in range(1000):
+            #for i in range(1000):
+            while True:
                 vk = v0.copy()
                 delta = 0
                 for s in self.States:
                     v0[s] = sum([mrp.ProbDist[self.States.index(s)][self.States.index(k)]
                                  * (mrp.Rewards[self.States.index(s)][self.States.index(k)] + self.gamma * vk[k])
                                  for k in self.States])
-                delta = max(delta, abs(vk[s]-v0[s]))
+                    delta = max(delta, abs(vk[s]-v0[s]))
                 if delta < threshold*(1-self.gamma)/self.gamma:
                     break
         return vk
@@ -136,7 +133,7 @@ class MDP_B(MRP_B):
             possible_rewards.append(self.all_info[state][action][s][1])
         return possible_states, possible_states_probs, possible_rewards
 
-    def generate_path(self, pol: Policy, start: State = None, steps: int = 10):
+    def generate_path(self, pol: Policy, start: State = None, steps: int = 10, print_text: bool = False):
         if start == None:
             start = np.random.choice(self.States)
         states = [start]
@@ -165,7 +162,8 @@ class MDP_B(MRP_B):
                         path_counter += self.all_info[current_state][a][s][0] * pol[current_state][a]
             if path_counter == 1:
                 i = steps + 1
-                print('Termination at state:', current_state)
+                if print_text is True:
+                    print('Termination at state:', current_state)
         return states, actions, rewards
 
 

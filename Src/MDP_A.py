@@ -13,8 +13,8 @@ class MDP_A(MRP_A):
         for i in P:
             for j in P[i]:
                 actions.append(j)
-        self.Actions=sorted(list(set(actions)))
-        self.Actiondict={i:{k for k in self.all_info[i]} for i in self.all_info}
+        self.Actions = sorted(list(set(actions)))
+        self.Actiondict = {i:{k for k in self.all_info[i]} for i in self.all_info}
 
     def get_MRP(self, pol: Policy):
         ProbDist = np.zeros((len(self.States), len(self.States)))
