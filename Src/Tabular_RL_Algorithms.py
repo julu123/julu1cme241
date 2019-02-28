@@ -79,7 +79,7 @@ class PredictionMethods(TabularBase):
                         for k in range(1, n + 1):
                             g_t = g_t + self.gamma * rewards[t + k]
                         g_t_lambda += lambd ** (n - 1) * g_t
-                    #g_t_lambda = (1 - lambd) * g_t_lambda
+                    g_t_lambda = (1 - lambd) * g_t_lambda
                     v0[sim_states[t]] = v0[sim_states[t]] + alpha * (g_t_lambda - v0[sim_states[t]])
         elif method == "Backward" and update == "Online":
             for i in range(nr_episodes):
