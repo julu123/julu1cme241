@@ -108,3 +108,6 @@ class PredictionMethods(TabularBase):
         elif method == "Backward" and update == "Offline":
             pass
         return v0
+
+class ControlMethods(TabularBase):
+    pass

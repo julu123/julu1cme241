@@ -23,24 +23,27 @@ pol = {
     'Sleep': {'a': 0.5, 'c': 0.5},
     'Game': {'a': 0, 'b': 1}}
 
-
 dp_value = MDP_B(P).policy_evaluation(pol)
-test = np.zeros((101, 1))
-test2 = np.zeros((101, 1))
+dp_matrix = np.zeros((101, 1))
+td_forward = np.zeros((101, 1))
+td_backward = np.zeros((101, 1))
 axis = np.linspace(0, 1, 101)
 
 for i in range(101):
     lambd = i/100
-    vf = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Forward", update="Offline", nr_episodes=1000,
+    vf_f = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Forward", update="Online", nr_episodes=500,
                                              episode_size=500)
-    test[i] = vf['Sleep']
-    test2[i] = dp_value['Sleep']
-    #test[[2, i]] = vf['Sleep']
-    #test[[3, i]] = vf['Game']
+    vf_b = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Backward", update="Online", nr_episodes=500,
+                                             episode_size=500)
+    td_forward[i] = vf_f['Sleep']
+    td_backward[i] = vf_b['Sleep']
+    dp_matrix[i] = dp_value['Sleep']
 
 
-plt.plot(axis, test)
-plt.plot(axis, test2)
-plt.ylabel('Value function of "Food" ')
+plt.plot(axis, dp_matrix, label="Value iteration")
+plt.plot(axis, td_forward, label="TD-Forward")
+plt.plot(axis, td_backward, label="TD-Backward")
+plt.legend()
+plt.ylabel('Value function of State "Sleep" ')
 plt.xlabel('\lambda')
 plt.show()
