@@ -1,7 +1,7 @@
 import numpy as np
-from Variables import State, Action, SA, SR
-from MDP_B import MDP_B
-from Variables import State, Action, Policy, Transitions_Rewards_Action_B
+from Processes.Variables import State, Action, SA, SR
+from Processes.MDP_B import MDP_B
+from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
 import random
 import matplotlib.pyplot as plt
 
@@ -62,7 +62,7 @@ class PredictionMethods(TabularBase):
                   alpha: float = 0.1,
                   lambd: float = 0.8,
                   episode_size: int = 500,
-                  nr_episodes: int = 1000,
+                  nr_episodes: int = 10000,
                   method: str = "Forward",
                   update: str = "Online",
                   print_text: bool = False):
@@ -74,12 +74,14 @@ class PredictionMethods(TabularBase):
                 "This method seems to be wrong"
                 for t in range(len(sim_states) - 1):
                     g_t_lambda = 0
+                    final_g_t = 0
                     for n in range(1, len(sim_states) - 1 - t):
                         g_t = rewards[t]
                         for k in range(1, n + 1):
                             g_t = g_t + self.gamma * rewards[t + k]
+                            final_g_t = g_t
                         g_t_lambda += lambd ** (n - 1) * g_t
-                    g_t_lambda = (1 - lambd) * g_t_lambda
+                    g_t_lambda = (1 - lambd) * g_t_lambda + lambd**(len(sim_states)-1) * final_g_t
                     v0[sim_states[t]] = v0[sim_states[t]] + alpha * (g_t_lambda - v0[sim_states[t]])
         elif method == "Backward" and update == "Online":
             for i in range(nr_episodes):
@@ -98,12 +100,14 @@ class PredictionMethods(TabularBase):
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
                 g_t_lambda = 0
+                final_g_t = 0
                 for t in range(1, len(sim_states) - 1):
                     g_t = rewards[0]
                     for n in range(1, t):
                         g_t = g_t + self.gamma**n * rewards[n]
+                        final_g_t = g_t
                     g_t_lambda = g_t_lambda + g_t * lambd**(t-1)
-                g_t_lambda = g_t_lambda*(1-lambd)
+                g_t_lambda = g_t_lambda*(1-lambd) + lambd**(len(sim_states)-1) * final_g_t
                 v0[sim_states[0]] = v0[sim_states[0]] + alpha * (g_t_lambda - v0[sim_states[0]])
         elif method == "Backward" and update == "Offline":
             pass

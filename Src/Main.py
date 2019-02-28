@@ -1,7 +1,5 @@
-from MDP_A import MDP_A
-from MDP_B import MDP_B
-from Tabular_RL_Algorithms import PredictionMethods
-from Options import Option
+from Processes.MDP_B import MDP_B
+from Algorithms.Tabular_RL_Algorithms import PredictionMethods
 import random
 #q = MDP_B(Question61().info)
 #print(q.convert_to_A().get_optimal_value_function())
@@ -45,8 +43,11 @@ random.seed(1)
 print('TD0:')
 print(PredictionMethods(P, pol).td_zero())
 random.seed(1)
-print('TD-lambda with Forward:')
-print(PredictionMethods(P, pol).td_lambda(lambd=0.9, method="Forward", nr_episodes=10000, update="Offline"))
+print('TD-lambda with Forward (Offline):')
+print(PredictionMethods(P, pol).td_lambda(method="Forward", update="Offline"))
+random.seed(1)
+print('TD-lambda with Forward (Online):')
+print(PredictionMethods(P, pol).td_lambda(method="Forward", update="Online"))
 random.seed(1)
 print('TD-lambda with Backward:')
 print(PredictionMethods(P, pol).td_lambda(method="Backward"))

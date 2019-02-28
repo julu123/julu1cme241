@@ -1,8 +1,8 @@
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
-from MRP_B import MRP_B
-from MDP_A import MDP_A
-from Variables import State, States, Transitions, PR, Transitions_rewards_B, R_B, Action, Policy, Transitions_Rewards_Action_B
+from Processes.MRP_B import MRP_B
+from Processes.MDP_A import MDP_A
+from Processes.Variables import State, States, Transitions, PR, Transitions_rewards_B, R_B, Action, Policy, Transitions_Rewards_Action_B
 
 
 class MDP_B(MRP_B):

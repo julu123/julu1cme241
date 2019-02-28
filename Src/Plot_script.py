@@ -1,5 +1,5 @@
-from MDP_B import MDP_B
-from Tabular_RL_Algorithms import PredictionMethods
+from Processes.MDP_B import MDP_B
+from Algorithms.Tabular_RL_Algorithms import PredictionMethods
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -25,23 +25,29 @@ pol = {
 
 dp_value = MDP_B(P).policy_evaluation(pol)
 dp_matrix = np.zeros((101, 1))
-td_forward = np.zeros((101, 1))
+td_forward_offline = np.zeros((101, 1))
+td_forward_online = np.zeros((101, 1))
 td_backward = np.zeros((101, 1))
 axis = np.linspace(0, 1, 101)
+n=500
 
 for i in range(101):
     lambd = i/100
-    vf_f = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Forward", update="Online", nr_episodes=500,
+    vf_f = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Forward", update="Online", nr_episodes=n,
                                              episode_size=500)
-    vf_b = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Backward", update="Online", nr_episodes=500,
+    vf_b = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Backward", update="Online", nr_episodes=n,
                                              episode_size=500)
-    td_forward[i] = vf_f['Sleep']
+    vf_offline = PredictionMethods(P, pol).td_lambda(lambd=lambd, method="Backward", update="Online", nr_episodes=n,
+                                             episode_size=500)
+    td_forward_online[i] = vf_f['Sleep']
+    td_forward_offline[i] = vf_offline['Sleep']
     td_backward[i] = vf_b['Sleep']
     dp_matrix[i] = dp_value['Sleep']
 
 
 plt.plot(axis, dp_matrix, label="Value iteration")
-plt.plot(axis, td_forward, label="TD-Forward")
+plt.plot(axis, td_forward_online, label="TD-Forward (Online)")
+plt.plot(axis, td_forward_offline, label="TD-Forward (Offline)")
 plt.plot(axis, td_backward, label="TD-Backward")
 plt.legend()
 plt.ylabel('Value function of State "Sleep" ')

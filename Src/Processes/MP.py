@@ -1,6 +1,6 @@
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
-from Variables import State, States, Transitions
+from Processes.Variables import State, States, Transitions
 
 
 class MP(object):

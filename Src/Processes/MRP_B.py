@@ -1,7 +1,7 @@
 import numpy as np
 from typing import TypeVar, Dict, List, Tuple
-from MP import MP
-from Variables import State, States, Transitions, PR, Transitions_rewards_B, R_B
+from Processes.MP import MP
+from Processes.Variables import State, States, Transitions, PR, Transitions_rewards_B, R_B
 
 
 class MRP_B(MP):
