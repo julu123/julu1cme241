@@ -3,6 +3,7 @@ from Variables import State, Action, SA, SR
 from MDP_B import MDP_B
 from Variables import State, Action, Policy, Transitions_Rewards_Action_B
 import random
+import matplotlib.pyplot as plt
 
 
 class TabularBase(MDP_B):  # This is just a simple way to generate data for test in MC
@@ -33,9 +34,9 @@ class PredictionMethods(TabularBase):
         g0 = v0.copy()
         for i in range(nr_episodes):
             sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
-            g_t = 0
-            for j in reversed(range(len(sim_states)-1)):
-                g_t = g_t * self.gamma + rewards[j]
+            g_t = rewards[0]
+            for j in range(1, len(sim_states) - 1):
+                g_t = g_t + self.gamma**j * rewards[j]
             v0[sim_states[0]] = v0[sim_states[0]] + g_t
             g0[sim_states[0]] += 1
         for i in v0:
@@ -59,9 +60,9 @@ class PredictionMethods(TabularBase):
 
     def td_lambda(self,
                   alpha: float = 0.1,
-                  lambd: float = 0.2,
+                  lambd: float = 0.8,
                   episode_size: int = 500,
-                  nr_episodes: int = 200,
+                  nr_episodes: int = 1000,
                   method: str = "Forward",
                   update: str = "Online",
                   print_text: bool = False):
@@ -70,16 +71,15 @@ class PredictionMethods(TabularBase):
         if method == "Forward" and update == "Online":
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
-                "This method does not work so far. I find to understanf the slides covering this material" \
-                "and I can't find any good implementation in Sutton's book"
+                "This method seems to be wrong"
                 for t in range(len(sim_states) - 1):
                     g_t_lambda = 0
                     for n in range(1, len(sim_states) - 1 - t):
                         g_t = rewards[t]
                         for k in range(1, n + 1):
-                            g_t += self.gamma * rewards[t + k]
+                            g_t = g_t + self.gamma * rewards[t + k]
                         g_t_lambda += lambd ** (n - 1) * g_t
-                    g_t_lambda = (1 - lambd) * g_t_lambda
+                    #g_t_lambda = (1 - lambd) * g_t_lambda
                     v0[sim_states[t]] = v0[sim_states[t]] + alpha * (g_t_lambda - v0[sim_states[t]])
         elif method == "Backward" and update == "Online":
             for i in range(nr_episodes):
@@ -95,12 +95,16 @@ class PredictionMethods(TabularBase):
                                         (rewards[t] + self.gamma * v0[next_state] - v0[current_state]) * \
                                         e_trace[current_state]
         elif method == "Forward" and update == "Offline":
-            g0 = {i: 0 for i in self.states}
-            pass
+            for i in range(nr_episodes):
+                sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
+                g_t_lambda = 0
+                for t in range(1, len(sim_states) - 1):
+                    g_t = rewards[0]
+                    for n in range(1, t):
+                        g_t = g_t + self.gamma**n * rewards[n]
+                    g_t_lambda = g_t_lambda + g_t * lambd**(t-1)
+                g_t_lambda = g_t_lambda*(1-lambd)
+                v0[sim_states[0]] = v0[sim_states[0]] + alpha * (g_t_lambda - v0[sim_states[0]])
         elif method == "Backward" and update == "Offline":
             pass
         return v0
-
-
-
-
