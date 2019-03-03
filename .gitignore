@@ -1,2 +1,5 @@
 .idea/
-.DS_Store
+DS_Store
+Src/__pycache__
+Src/__init__.py
+
