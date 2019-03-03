@@ -58,7 +58,7 @@ class MDP_B(MRP_B):
                     V0[s] = max([sum([(self.all_info[s][a][k][1] + Vk[k]*self.gamma)*self.all_info[s][a][k][0]
                                                for k in self.all_info[s][a]])
                                                for a in self.all_info[s]])
-            return Vk
+            return V0
 
     def get_optimal_policy(self, easy: bool = False, n: int = 100, threshold: float = 1e-3):
         pol = {i: {j: 1 / len(self.States) for j in self.all_info[i]} for i in self.all_info}
@@ -74,6 +74,7 @@ class MDP_B(MRP_B):
                             actlist[a] += self.all_info[s][a][j][0] * (self.all_info[s][a][j][1] + vk[j] * self.gamma)
                     pi[s] = max(actlist, key=actlist.get)
                     v0[s] = actlist[pi[s]]
+                #print('iteration:', i, ', policy:', pi)
             return {i: {j: (1 if pi[i] == j else 0) for j in self.all_info[i]} for i in self.all_info}
         else:
             value_function = self.get_optimal_value_function()
@@ -96,14 +97,15 @@ class MDP_B(MRP_B):
     def policy_evaluation(self,
                           pol: Policy,
                           easy: bool = False,
+                          n: int = 100,
                           threshold: float = 1e-4):
         mrp = self.get_MRP(pol)
         if easy is True:
             print('method not yet developed. lol')
         else:
             v0 = dict([(s, 0) for s in self.States])
-            #for i in range(1000):
-            while True:
+            for i in range(n):
+            #while True:
                 vk = v0.copy()
                 delta = 0
                 for s in self.States:
@@ -113,7 +115,7 @@ class MDP_B(MRP_B):
                     delta = max(delta, abs(vk[s]-v0[s]))
                 if delta < threshold*(1-self.gamma)/self.gamma:
                     break
-        return vk
+        return v0
 
     def genarate_action_dist(self, state: State, pol: Policy):
         possible_actions = []
