@@ -84,3 +84,6 @@ class Option:
                 exercise_values[estimated_continued_value <= exercise_values]
 
         return np.mean(final_payoffs*np.exp(-self.rf*dt))
+
+    def least_squares_policy_iteration(self):
+        pass

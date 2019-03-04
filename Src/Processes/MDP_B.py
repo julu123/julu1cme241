@@ -136,27 +136,36 @@ class MDP_B(MRP_B):
         return possible_states, possible_states_probs, possible_rewards
 
     def generate_path(self, pol: Policy, start: State = None, steps: int = 10, print_text: bool = False):
-        if start == None:
+        if start is None:
             start = np.random.choice(self.States)
         states = [start]
-        actions = []
-        rewards = []
         current_state = start
+
+        action_list, actions_dist = self.genarate_action_dist(current_state, pol)
+        current_action = np.random.choice(action_list, replace=True, p=actions_dist)
+        actions = [current_action]
+
+        rewards = []
         i = 0
         while i <= steps:
+            "Generate possible states given current state and action"
+            states_list, states_dist, reward_list = self.generate_state_dist(current_state, current_action)
+            "Simulate state"
+            next_state = np.random.choice(states_list, replace=True, p=states_dist)
+            "Reward in accordance with next_state"
+            reward = reward_list[states_list.index(next_state)]
+            rewards.append(reward)
+            "Find next action given next state"
+            action_list, actions_dist = self.genarate_action_dist(next_state, pol)
+            next_action = np.random.choice(action_list, replace=True, p=actions_dist)
+            "Append action and state"
+            states.append(next_state)
+            actions.append(next_action)
+            "Save next state and action as the new current state and action for next iteration"
+            current_action = next_action
+            current_state = next_state
+            "Iterate one step"
             i += 1
-            action_list, actions_dist = self.genarate_action_dist(current_state, pol)
-            act = np.random.choice(action_list, replace=True, p=actions_dist)
-            actions.append(act)
-
-            states_list, states_dist, reward_list = self.generate_state_dist(current_state, act)
-            state = np.random.choice(states_list, replace=True, p=states_dist)
-            states.append(state)
-
-            rew = reward_list[states_list.index(state)]
-            rewards.append(rew)
-
-            current_state = state
             path_counter = 0
             for a in self.all_info[current_state]:
                 for s in self.all_info[current_state][a]:

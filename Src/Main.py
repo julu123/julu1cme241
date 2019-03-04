@@ -1,7 +1,7 @@
 from Processes.MDP_B import MDP_B
 from Algorithms.Tabular_RL_Algorithms import PredictionMethods, ControlMethods
-
 import random
+
 #q = MDP_B(Question61().info)
 #print(q.convert_to_A().get_optimal_value_function())
 #print(q.convert_to_A().get_optimal_policy())
@@ -67,26 +67,25 @@ pol = {
 
 it = 400
 #print('iterations: ', it)
-print('Policy (4,0,0,0,0)')
-print(MDP_B(Question61().info).get_optimal_value_function(easy=True, n=it))
+#print('Policy (4,0,0,0,0)')
+#print(MDP_B(Question61().info).get_optimal_value_function(easy=True, n=it))
 #print(MDP_B(Question61().info).get_optimal_policy(easy=True, n=it))
-test_pol = {0: {0: 0, 1: 0, 2: 0, 3: 0, 4: 1}, 1: {0: 1, 1: 0, 2: 0, 3: 0}, 2: {0: 1, 1: 0, 2: 0}, 3: {0: 1, 1: 0}, 4: {0: 1}}
-print('Policy (4,3,0,0,0)')
-print(MDP_B(Question61().info).policy_evaluation(pol=test_pol, n=it))
+#test_pol = {0: {0: 0, 1: 0, 2: 0, 3: 0, 4: 1}, 1: {0: 1, 1: 0, 2: 0, 3: 0}, 2: {0: 1, 1: 0, 2: 0}, 3: {0: 1, 1: 0}, 4: {0: 1}}
+#print('Policy (4,3,0,0,0)')
+#print(MDP_B(Question61().info).policy_evaluation(pol=test_pol, n=it))
 #print(ControlMethods(P).sarsa(pol))
 
-print('llkkkl')
+print(ControlMethods(P).q_learning_off_policy(pol))
 
 
-
-#op_pol = MDP_B(P).get_optimal_policy()
-#print(op_pol)
-#print(MDP_B(P).get_optimal_value_function())
-#print('DP:')
-#print(MDP_B(P).policy_evaluation(pol))
+op_pol = MDP_B(P).get_optimal_policy()
+print(op_pol)
+print(MDP_B(P).get_optimal_value_function())
+print('DP:')
+print(MDP_B(P).policy_evaluation(pol))
 #random.seed(1)
-#print('TD0:')
-#print(PredictionMethods(P, pol).td_zero())
+print('TD0:')
+print(PredictionMethods(P, pol).td_zero())
 #random.seed(1)
 #print('TD-lambda with Forward (Offline):')
 #print(PredictionMethods(P, pol).td_lambda(lambd=1, method="Forward", update="Offline"))
