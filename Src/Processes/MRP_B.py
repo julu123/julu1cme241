@@ -16,8 +16,8 @@ class MRP_B(MP):
             else:
                 self.States=[i for i in range(len(ProbDist))]
         else:
-            self.States=S
-        if np.all(R) == None:
+            self.States = S
+        if np.all(R) is None:
             self.Rewards=self.Get_Reward_matrix(ProbDist)
         else:
             assert len(R) == len(self.States)

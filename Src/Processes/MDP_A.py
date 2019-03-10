@@ -6,15 +6,15 @@ from Processes.Variables import State, States, R_A, Transitions, Action, Transit
 
 class MDP_A(MRP_A):
     def __init__(self, probdist: Transitions_Rewards_Action_A = None, gamma: float = 0.99):
-        self.States=list(probdist)
-        self.gamma=gamma
-        self.all_info=probdist
-        actions=[]
+        self.States = list(probdist)
+        self.gamma = gamma
+        self.all_info = probdist
+        actions = []
         for i in P:
             for j in P[i]:
                 actions.append(j)
         self.Actions = sorted(list(set(actions)))
-        self.Actiondict = {i:{k for k in self.all_info[i]} for i in self.all_info}
+        self.Actiondict = {i: {k for k in self.all_info[i]} for i in self.all_info}
 
     def get_MRP(self, pol: Policy):
         ProbDist = np.zeros((len(self.States), len(self.States)))

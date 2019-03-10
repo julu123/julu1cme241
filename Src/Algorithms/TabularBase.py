@@ -1,9 +1,9 @@
 from Processes.MDP_B import MDP_B
-from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
+from Processes.Variables import State, States, Action, Policy, Transitions_Rewards_Action_B
 
 
 class TabularBase(MDP_B):  # This is just a simple way to generate data
-    def __init__(self, mdp: Transitions_Rewards_Action_B, terminal_state: State = None, gamma: float = 0.99):
+    def __init__(self, mdp: Transitions_Rewards_Action_B, terminal_state: (State or States) = None, gamma: float = 0.99):
         MDP_B.__init__(self, mdp, gamma)
         self.info = mdp
         self.terminal_state = terminal_state

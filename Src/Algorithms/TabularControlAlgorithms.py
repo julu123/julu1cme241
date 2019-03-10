@@ -1,4 +1,4 @@
-from TabularBase import TabularBase
+from Algorithms.TabularBase import TabularBase
 import numpy as np
 from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
 
@@ -83,3 +83,39 @@ class ControlMethods(TabularBase):
                 current_action = next_action
                 current_state = next_state
         return q0, pi0
+
+    def sarsa_lambda(self,
+                     pol: Policy,
+                     alpha: float = 0.1,
+                     lambd: float = 0.5,
+                     start_state: State = None,
+                     episode_size: int = 500,
+                     nr_episodes: int = 1000,
+                     print_text: bool = False):
+        q0 = {state: {action: 0 for action in pol[state]} for state in self.states}  # values
+        for i in range(nr_episodes):
+            e_trace = {state: {action: 0 for action in pol[state]} for state in list(pol)}
+            sim_states, sim_action, sim_rewards = self.generate(pol,
+                                                                state=start_state,
+                                                                steps=episode_size,
+                                                                print_text=print_text)
+            for j in range(len(sim_states) - 1):
+
+                current_state = sim_states[j]
+                current_action = sim_action[j]
+
+                next_state = sim_states[j + 1]
+                next_action = sim_action[j + 1]
+
+                if self.investigate_termination(current_state, pol) is True:
+                    reward = 0
+                else:
+                    reward = sim_rewards[j]
+
+                delta = reward + self.gamma * q0[next_state][next_action] - q0[current_state][current_action]
+                e_trace[current_state][current_action] += 1
+                for state in list(pol):
+                    for action in list(pol[state]):
+                        q0[state][action] = q0[state][action] + alpha * e_trace[state][action] * delta
+                        e_trace[state][action] = self.gamma * lambd * e_trace[state][action]
+        return q0

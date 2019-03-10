@@ -101,7 +101,7 @@ class MDP_B(MRP_B):
                           threshold: float = 1e-4):
         mrp = self.get_MRP(pol)
         if easy is True:
-            print('method not yet developed. lol')
+            print('method not yet developed')
         else:
             v0 = dict([(s, 0) for s in self.States])
             for i in range(n):

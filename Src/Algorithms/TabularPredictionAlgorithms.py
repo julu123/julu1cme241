@@ -1,8 +1,7 @@
 import numpy as np
 import random
-from TabularBase import TabularBase
+from Algorithms.TabularBase import TabularBase
 from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
-
 
 
 class PredictionMethods(TabularBase):
@@ -20,7 +19,6 @@ class PredictionMethods(TabularBase):
                                 episode_size: int = 500,
                                 nr_episodes: int = 200,
                                 print_text: bool = False):
-        random.seed(1)
         v0 = {i: 0 for i in self.states}
         g0 = v0.copy()
         for i in range(nr_episodes):
@@ -31,7 +29,8 @@ class PredictionMethods(TabularBase):
             v0[sim_states[0]] = v0[sim_states[0]] + g_t
             g0[sim_states[0]] += 1
         for i in v0:
-            v0[i] = v0[i]/g0[i]
+            if g0[i] != 0:
+                v0[i] = v0[i]/g0[i]
         return v0
 
     def td_zero(self,
@@ -57,12 +56,10 @@ class PredictionMethods(TabularBase):
                   method: str = "Forward",
                   update: str = "Online",
                   print_text: bool = False):
-        random.seed(1)
         v0 = {i: 0 for i in self.states}
         if method == "Forward" and update == "Online":
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
-                "This method seems to be wrong"
                 for t in range(len(sim_states) - 1):
                     g_t_lambda = 0
                     final_g_t = 0
@@ -90,7 +87,6 @@ class PredictionMethods(TabularBase):
         elif method == "Forward" and update == "Offline":
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
-                #rewards.append(0) this can be added to make the code simpler, for now it just terminates before the zero..
                 g_t_lambda = 0
                 final_g_t = 0
                 for t in range(1, len(sim_states) - 1):
