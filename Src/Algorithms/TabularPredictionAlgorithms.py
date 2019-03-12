@@ -49,15 +49,16 @@ class PredictionMethods(TabularBase):
         return v0
 
     def td_lambda(self,
-                  alpha: float = 0.1,
+                  alpha: float = 0.05,
                   lambd: float = 0.8,
                   episode_size: int = 500,
-                  nr_episodes: int = 10000,
+                  nr_episodes: int = 100000,
                   method: str = "Forward",
                   update: str = "Online",
                   print_text: bool = False):
         v0 = {i: 0 for i in self.states}
         if method == "Forward" and update == "Online":
+            vf_per_iterations = np.zeros((int(nr_episodes / 1), len(self.states)))
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
                 for t in range(len(sim_states) - 1):
@@ -70,8 +71,10 @@ class PredictionMethods(TabularBase):
                         final_g_t = g_t
                         g_t_lambda += lambd ** (n - 1) * g_t
                     g_t_lambda = (1 - lambd) * g_t_lambda + lambd**(len(sim_states)-1) * final_g_t
-                    v0[sim_states[t]] = v0[sim_states[t]] + alpha * (g_t_lambda - v0[sim_states[t]])
+                    lr = alpha - alpha * i / nr_episodes
+                    v0[sim_states[t]] = v0[sim_states[t]] + lr * (g_t_lambda - v0[sim_states[t]])
         elif method == "Backward" and update == "Online":
+            vf_per_iterations = np.zeros((int(nr_episodes / 1), len(self.states)))
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
                 e_trace = {i: 0 for i in self.states}
@@ -81,10 +84,12 @@ class PredictionMethods(TabularBase):
                     e_trace[sim_states[t]] += 1
                     current_state = sim_states[t]
                     next_state = sim_states[t + 1]
-                    v0[current_state] = v0[current_state] + alpha * \
+                    lr = alpha - alpha * i / nr_episodes
+                    v0[current_state] = v0[current_state] + lr * \
                                         (rewards[t] + self.gamma * v0[next_state] - v0[current_state]) * \
                                         e_trace[current_state]
         elif method == "Forward" and update == "Offline":
+            vf_per_iterations = np.zeros((int(nr_episodes/1), len(self.states)))
             for i in range(nr_episodes):
                 sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
                 g_t_lambda = 0
@@ -96,7 +101,11 @@ class PredictionMethods(TabularBase):
                     final_g_t = g_t
                     g_t_lambda = g_t_lambda + g_t * lambd**(t-1)
                 g_t_lambda = g_t_lambda*(1-lambd) + lambd**(len(sim_states)-1) * final_g_t
-                v0[sim_states[0]] = v0[sim_states[0]] + alpha * (g_t_lambda - v0[sim_states[0]])
+                lr = alpha - alpha * i / nr_episodes
+                v0[sim_states[0]] = v0[sim_states[0]] + lr * (g_t_lambda - v0[sim_states[0]])
+                if (i+1) % 1 == 0:
+                    for j, k in enumerate(v0):
+                        vf_per_iterations[int((i+1)/1-1), j] = v0[k]
         elif method == "Backward" and update == "Offline":
             pass
-        return v0
+        return v0, vf_per_iterations

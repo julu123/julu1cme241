@@ -6,9 +6,9 @@ from Processes.Variables import State, Action
 class GBMStockSimulator(object):
 
     def __init__(self,
-                 step_size: float = 1/12,
-                 mu: float = 0.1,
-                 sigma: float = 0.2):
+                 step_size: float = 1/100,
+                 mu: float = 0.05,
+                 sigma: float = 0.25):
         self.step_size = step_size
         self.mu = mu
         self.sigma = sigma
@@ -32,6 +32,7 @@ class GBMStockSimulator(object):
             return self.generate_one_step_training_data(state)
 
     def get_features(self, state: State, strike: float, time: float, maturity: float):
+        #assert isinstance(state, (float or int)) is True
         s = state/strike
         ttm = maturity - time
         phi0 = 1

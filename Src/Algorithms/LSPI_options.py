@@ -7,16 +7,15 @@ class LPSI(GBMStockSimulator):
     def __init__(self,
                  starting_stock_price: State = 100,
                  strike: float = 110,
-                 step_size: float = 1/12,
-                 maturity: float = 2,
-                 gamma: float = 0.99,
-                 call_or_put: str = "Call",
-                 mu: float = 0.1,
-                 sigma: float = 0.2,
-                 rf: float = 0.005):
+                 step_size: float = 1/100,
+                 maturity: float = 0.5,
+                 gamma: float = 0.95,
+                 call_or_put: str = "Put",
+                 mu: float = 0,
+                 sigma: float = 0.25):
         GBMStockSimulator.__init__(self,
                                    step_size=step_size,
-                                   mu=mu,
+                                   mu=1-gamma,
                                    sigma=sigma)
         self.strike = strike
         self.starting_stock_price = starting_stock_price
@@ -24,19 +23,81 @@ class LPSI(GBMStockSimulator):
         self.maturity = maturity
         self.call_or_put = call_or_put
         self.gamma = gamma
-        self.rf = rf
+        self.rf = 1 - gamma
 
     def initialize_w(self):
         size = (self.get_features(self.starting_stock_price, self.strike, 0, self.maturity)).shape
-        return np.random.rand(size[1], 1)*0.01
+        return np.random.randn(size[1], 1)*0.01
         #return np.zeros((size[1], 1))
 
-
     def update_w(self, A, B):
-        return np.dot(np.linalg.inv(A), B)
+        return np.matmul(np.linalg.inv(A), B)
 
-    def update_policy(self):
-        pass
+    def get_payoff(self, stock_price: float):
+        payoff = 0
+        if self.call_or_put == "Call":
+            payoff = max(0.0, stock_price - self.strike)
+        elif self.call_or_put == "Put":
+            payoff = max(0.0, self.strike - stock_price)
+        return payoff
+
+    def learn_algo31(self,
+                     nr_episodes: int = 100000,
+                     nr_steps: int = 100,
+                     batch_size: int = 100,
+                     r: int = 7):
+        A = np.zeros((r, r))
+        B = np.zeros((r, 1))
+        w = np.zeros((r, 1))
+        step_size = self.maturity / nr_steps
+        for i in range(nr_episodes):
+            stock_price = self.starting_stock_price
+            for j in range(nr_steps):
+                # Get current features
+                current_features = self.get_features(state=stock_price,
+                                                     strike=self.strike,
+                                                     time=j*step_size,
+                                                     maturity=self.maturity)
+                # Get next stock price
+                next_stock_price = self.generate(state=stock_price, action=False)
+                # Get next features
+                next_features = self.get_features(state=next_stock_price,
+                                                  strike=self.strike,
+                                                  time=(j+1)*step_size,
+                                                  maturity=self.maturity)
+                # Get Q
+                Q = self.get_payoff(next_stock_price)
+                # Get P
+                P = np.zeros((1, r))
+                if j < nr_steps - 1 and Q <= float(np.matmul(next_features, w)):
+                    P = next_features
+                # Get R
+                R = 0
+                if Q > float(np.matmul(P, w)):
+                    R = Q
+                # Get A
+                A_PART = np.subtract(current_features, np.exp(- self.rf * step_size) * P)
+                A += np.matmul(current_features.T, A_PART)
+                # Get B
+                B += np.exp(- self.rf * step_size) * R * current_features.T
+                # Update stock price
+                stock_price = next_stock_price
+            if (i+1) % batch_size == 0:
+                w = self.update_w(A, B)
+                A = np.zeros((r, r))
+                B = np.zeros((r, 1))
+
+            if (i+1) % 1000 == 0:
+                print('iteration:', i+1, 'price: ', np.matmul(self.get_features(
+                                        state=self.starting_stock_price,
+                                        strike=self.strike,
+                                        time=0,
+                                        maturity=self.maturity), w))
+        return np.matmul(self.get_features(state=self.starting_stock_price,
+                                           strike=self.strike,
+                                           time=0,
+                                           maturity=self.maturity), w)
+
 
     def learn_test(self,
                    nr_episodes: int = 1000,
@@ -126,12 +187,68 @@ class LPSI(GBMStockSimulator):
 
                 current_features = next_features
             if batch_ticker % batch_size == 0:
-                w += self.update_w(A, B)
+                w = self.update_w(A, B)
                 A = np.zeros((len(w), len(w)))
                 B = np.zeros((len(w), 1))
         return w, float(np.dot(self.get_features(state=self.starting_stock_price,
                                                  strike=self.strike, time=0, maturity=self.maturity), w))
 
-    def predict(self):
-        pass
+    def learn_2(self,
+                alpha: float = 0.01,
+                nr_episodes: int = 10000,
+                decay: bool = True):
+        w = self.initialize_w()
+        for i in range(nr_episodes):
+            time = 0
+            exercise = False
+            stock_price = 50 + np.random.rand()*200
+            current_features = self.get_features(state=stock_price,
+                                                 strike=self.strike,
+                                                 time=time,
+                                                 maturity=self.maturity)
+            while exercise is False and time + self.step_size <= self.maturity:
+                # Find current values
+                option_value = float(np.dot(current_features, w))
+                intrinsic_value = 0
+                if self.call_or_put == "Call":
+                    intrinsic_value = max(0, stock_price - self.strike)
+                elif self.call_or_put == "Put":
+                    intrinsic_value = max(0, self.strike - stock_price)
 
+                # Find next values
+                time += self.step_size
+                stock_price = self.generate(state=stock_price, action=False)
+                next_features = self.get_features(state=stock_price,
+                                                  strike=self.strike,
+                                                  time=time,
+                                                  maturity=self.maturity)
+
+                # Decide what to do. Policy = choose max of intrinsic value or option value
+                if intrinsic_value > option_value:
+                    exercise = True
+                    reward = intrinsic_value
+                    td_error = reward - option_value
+                elif time + self.step_size == self.maturity:
+                    exercise = True
+                    maturity_value = 0
+                    if self.call_or_put == "Call":
+                        maturity_value = max(0, stock_price - self.strike)
+                    elif self.call_or_put == "Put":
+                        maturity_value = max(0, self.strike - stock_price)
+                    reward = maturity_value
+                    td_error = reward - option_value
+                else:
+                    td_error = self.gamma * float(np.dot(next_features, w)) - option_value
+                u = td_error * current_features.T
+
+                # Update features
+                current_features = next_features
+
+                # Update w
+                if decay is True:
+                    learning_rate = alpha - alpha * i / nr_episodes
+                else:
+                    learning_rate = alpha
+                w = w + learning_rate * u
+        return w, np.dot(self.get_features(state=self.starting_stock_price, strike=self.strike,
+                                           time=0, maturity=self.maturity), w)

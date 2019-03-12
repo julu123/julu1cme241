@@ -1,60 +1,127 @@
 import numpy as np
+from typing import Callable, Tuple
 from Algorithms.FunctionApproximationBase import FunctionApproximationBase
-from Utils.GBMStockSimulator import GMBStockSimulator
-
-# This is very much a WIP
-# Model assumes that price of option = a * ttm + b * stock_price + c * exercise_value
+from Processes.Variables import State, Action
 
 
-class MonteCarlo(FunctionApproximationBase):
+class ApproximatePredictionMethods(FunctionApproximationBase):
+
     def __init__(self,
-                 alpha: float = 0.1,
-                 strike: float = 110,
-                 features: dict = {'stock price': 100, 'ttm': 2, 'payoff': 0}
-                 ):
-        self.strike = strike
-        self.alpha = alpha
-        self.features = features
+                 generator_function: Callable[[State, Action], Tuple[State, (float or int)]],
+                 feature_function: Callable[[State], np.ndarray],
+                 policy: Callable[[State], Action],
+                 terminal_states: Callable[[State], bool] = None,
+                 gamma: float = 0.99):
+        FunctionApproximationBase.__init__(generator_function=generator_function,
+                                           feature_function=feature_function,
+                                           policy=policy,
+                                           terminal_states=terminal_states)
+        self.gamma = gamma
 
-    def initialize_theta(self):
-        return np.random.rand(len(self.features), 1) * 0.01
-
-    def update_theta(self,
-                     theta,
-                     observed_gt: float,
-                     estimated_value,
-                     gradient):
-        # theta and gradient are both vectors of the same size, all the other values are scalar
-        return theta + self.alpha * (observed_gt - estimated_value) * gradient
-
-    def update_features(self, features, price, step_size):
-        return {'stock price': price, 'ttm': (features['ttm']-step_size), 'payoff': max(0, price - self.strike)}
-
-    def get_feature_vector(self, features):
-        vector = np.zeros((1, len(features)))
-        for i, j in enumerate(features):
-            vector[0, i] = features[j]
-        return vector
+    def initialize_w(self, features):
+        size = features.shape
+        size = max(size[0], size[1])
+        return np.random.randn(size, 1)*0.01
 
     def learn(self,
-              episode_size: int = 50,
-              nr_episodes: int = 100):
-        theta = self.initialize_theta()
-        step_size = self.features['ttm']/episode_size
+              starting_state: State,
+              nr_episodes: int = 10000,
+              alpha: float = 0.1,
+              decay: bool = False,
+              max_iterations: int = 500,
+              update: str = "Online"):
+        starting_features = self.get_features(starting_state)
+        w = self.initalize_w(starting_features)
         for i in range(nr_episodes):
-            features = self.features
-            stock_data = StockSimulator(step_size).generate_n_step_training_data(stock_price=features['stock price'],
-                                                                                 time=features['ttm'])
-            for j in range(episode_size):
-                features = self.update_features(features, stock_data[j], step_size)
-                if j < episode_size:
-                    g_t = 0
-                else:
-                    g_t = max(0, stock_data[j] - self.strike)
-                state_features = self.get_feature_vector(features)
-                gradient = state_features.T
-                e_v = np.dot(state_features, theta)
-                if j % 10 == 0:
-                    print(theta)
-                theta = self.update_theta(theta, g_t, e_v, gradient)
-        return theta
+            current_state = starting_state  # Perhaps we should be able to choose this randomly
+            ticker = 0
+            g_t = 0
+
+            if decay is True:
+                learning_rate = alpha - alpha * i / nr_episodes
+            else:
+                learning_rate = alpha
+
+            while self.investigate_termination(current_state) is False and ticker < max_iterations:
+                # Do an action
+                current_action = self.policy(current_state)
+                # Observe state and reward
+                next_state, reward = self.generate(current_state, current_action)
+                # Update G_t
+                g_t += self.gamma**ticker*reward
+                # Update ticker and state
+                current_state = next_state
+                ticker += 1
+                if update == "Online":
+                    gradient = self.get_features(current_state).T
+                    v_hat = float(np.dot(self.get_features(current_state), w))
+                    w += learning_rate * (g_t - v_hat) * gradient
+            if update == "Offline":
+                gradient = self.get_features(starting_state).T
+                v_hat = float(np.dot(self.get_features(starting_state), w))
+                w += learning_rate * (g_t - v_hat) * gradient
+        return w
+
+    def td_zero(self,
+                starting_state: State,
+                nr_episodes: int = 10000,
+                alpha: float = 0.1,
+                decay: bool = False,
+                max_iterations: int = 500):
+        starting_features = self.get_features(starting_state)
+        w = self.initalize_w(starting_features)
+        for i in range(nr_episodes):
+            current_state = starting_state
+            ticker = 0
+
+            if decay is True:
+                learning_rate = alpha - alpha * i / nr_episodes
+            else:
+                learning_rate = alpha
+
+            while self.investigate_termination(current_state) is False and ticker < max_iterations:
+                # Do an action
+                current_action = self.policy(current_state)
+                # Observe next state and reward
+                next_state, reward = self.generate(current_state, current_action)
+                # Update -- gradient is just transpose of current features since we use a linear function -- Hard coded
+                gradient = self.get_features(current_state).T
+                td_error = reward + np.matmul((self.gamma * self.get_features(next_state) -
+                                               self.get_features(current_state)), w)
+                w += learning_rate * td_error * gradient
+                current_state = next_state
+        return w
+
+    def td_lambda_w_eligibility_traces(self,
+                                       starting_state: State,
+                                       lambd: float = 0.8,
+                                       nr_episodes: int = 10000,
+                                       alpha: float = 0.1,
+                                       decay: bool = False,
+                                       max_iterations: int = 500):
+        starting_features = self.get_features(starting_state)
+        w = self.initalize_w(starting_features)
+        k = starting_features.shape
+        k = max(k[0], k[1])
+        for i in range(nr_episodes):
+            current_state = starting_state
+            z = np.zeros((k, 1))
+            ticker = 0
+            if decay is True:
+                learning_rate = alpha - alpha * i / nr_episodes
+            else:
+                learning_rate = alpha
+            while self.investigate_termination(current_state) is False and ticker < max_iterations:
+                # Do an action
+                current_action = self.policy(current_state)
+                # Observe next state and reward
+                next_state, reward = self.generate(current_state, current_action)
+                # Update Z
+                gradient = self.get_features(current_state).T
+                z = self.gamma * lambd * z + gradient
+                # Update w
+                td_error = reward + np.matmul(self.gamma*self.get_fetures(next_state) -
+                                              self.get_features(current_state), w)
+                w += learning_rate * td_error * z
+                current_state = next_state
+        return w

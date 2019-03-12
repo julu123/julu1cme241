@@ -1,19 +1,20 @@
 import numpy as np
 from scipy.stats import norm
 from scipy.stats import linregress
+import statsmodels.api as sm
 
 
 class Option:
     def __init__(self,
-                 sigma: float = 0.2,
-                 maturity: float = 2,
-                 rf: float = 0.005):
+                 sigma: float = 0.25,
+                 maturity: float = 0.5,
+                 rf: float = 0.05):
         self.sigma = sigma
         self.rf = rf
         self.maturity = maturity
 
     def black_scholes_price(self, stock_price: float = 100,
-                            strike: float = 110,
+                            strike: float = 100,
                             call_or_put: str = "Call"):
         d1_num = np.log(stock_price / strike) + (self.rf + self.sigma ** 2 / 2) * self.maturity
         d1 = d1_num / (self.sigma * np.sqrt(self.maturity))
@@ -24,11 +25,11 @@ class Option:
             return norm.cdf(-d2)*strike*np.exp(-self.rf*self.maturity)-norm.cdf(-d1)*stock_price
 
     def binomial_tree_price(self,
-                            stock_price: float,
-                            strike: float,
-                            call_or_put: str = "Call",
-                            origin: str = "European",
-                            n: int = 200):
+                            stock_price: float = 100,
+                            strike: float = 110,
+                            call_or_put: str = "Put",
+                            origin: str = "American",
+                            n: int = 100):
         dt = self.maturity/n
         u = np.exp(self.sigma*np.sqrt(dt))
         d = 1/u
@@ -36,9 +37,9 @@ class Option:
         stock_matrix = np.zeros((n, n))
         price_matrix = np.zeros((n, n))
         stock_matrix[0, 0] = stock_price
-        for i in range(1,n):
+        for i in range(1, n):
             for j in range(i):
-                stock_matrix[j, i] =stock_matrix[j, i-1]*u
+                stock_matrix[j, i] = stock_matrix[j, i-1]*u
             stock_matrix[i, i] = stock_matrix[i-1, i-1]*d
         for i in range(n):
             if call_or_put == "Call":
@@ -48,21 +49,25 @@ class Option:
         for i in reversed(range(n-1)):
             for j in range(i+1):
                 if origin == "American" and call_or_put == "Put":
-                    price_matrix[j,i] = max(np.exp(-self.rf*dt) * (
+                    price_matrix[j, i] = max(np.exp(-self.rf*dt) * (
                             p*price_matrix[j, i+1] + (1-p)*price_matrix[j+1, i+1]),
-                                            strike-stock_matrix[j, i]
-                                            )
+                                            strike-stock_matrix[j, i])
+                elif origin == "American" and call_or_put == "Call":
+                    price_matrix[j, i] = max(np.exp(-self.rf * dt) * (
+                            p * price_matrix[j, i + 1] + (1 - p) * price_matrix[j + 1, i + 1]),
+                                             stock_matrix[j, i] - strike)
                 else:
                     price_matrix[j, i] = np.exp(-self.rf * dt) * (
                                 p * price_matrix[j, i + 1] + (1 - p) * price_matrix[j + 1, i + 1])
         return price_matrix[0, 0]
 
     def longstaff_schartz_price(self,
-                                stock_price: float,
-                                strike: float,
+                                stock_price: float = 100,
+                                strike: float = 110,
                                 m: int = 10000,
-                                n: int = 200): #call_or_put is an american put (no need to implement)
-        "m is the amount of simulations, n is the amount of time steps"
+                                n: int = 100):
+        # "call_or_put" is an american put (no need to implement)
+        # m is the amount of simulations, n is the amount of time steps
         dt = self.maturity/n
         normal_returns = norm.rvs(size=(m, 1))
         final_returns = (self.rf - self.sigma**2/2)*self.maturity + self.sigma*np.sqrt(self.maturity)*normal_returns
@@ -78,7 +83,11 @@ class Option:
 
             slope, intercept, _, _, _ = linregress(in_the_money_stocks, discounted_payoffs)
 
-            estimated_continued_value = slope * stock_prices
+            #model = sm.OLS(discounted_payoffs, in_the_money_stocks)
+            #results = model.fit()
+            #slope = float(results.params)
+
+            estimated_continued_value = slope * stock_prices #+ intercept
             exercise_values = np.maximum(strike - stock_prices, 0)
 
             final_payoffs[estimated_continued_value > exercise_values] = \
@@ -87,6 +96,3 @@ class Option:
                 exercise_values[estimated_continued_value <= exercise_values]
 
         return np.mean(final_payoffs*np.exp(-self.rf*dt))
-
-    def least_squares_policy_iteration(self):
-        pass

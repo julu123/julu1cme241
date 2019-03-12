@@ -39,5 +39,7 @@ rf = 0.005
 
 #print(len(features))
 
+print(LPSI().learn_2())
+#print(LPSI().learn_test())
 print(LPSI().learn())
-print(Option().black_scholes_price())
+print(Option().binomial_tree_price())
