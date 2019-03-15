@@ -3,13 +3,16 @@ from typing import Callable, Tuple
 from Algorithms.FunctionApproximationBase import FunctionApproximationBase
 from Processes.Variables import State, Action
 
+# Only works for linear models. More fancy models would require a different gradient and that is
+# not incorporated in my code.
+
 
 class ApproximatePredictionMethods(FunctionApproximationBase):
 
     def __init__(self,
                  generator_function: Callable[[State, Action], Tuple[State, (float or int)]],
-                 feature_function: Callable[[State], np.ndarray],
                  policy: Callable[[State], Action],
+                 feature_function: Callable[[State], np.ndarray],
                  terminal_states: Callable[[State], bool] = None,
                  gamma: float = 0.99):
         FunctionApproximationBase.__init__(generator_function=generator_function,
@@ -44,7 +47,7 @@ class ApproximatePredictionMethods(FunctionApproximationBase):
 
             while self.investigate_termination(current_state) is False and ticker < max_iterations:
                 # Do an action
-                current_action = self.policy(current_state)
+                current_action = self.get_action(current_state)
                 # Observe state and reward
                 next_state, reward = self.generate(current_state, current_action)
                 # Update G_t
@@ -81,7 +84,7 @@ class ApproximatePredictionMethods(FunctionApproximationBase):
 
             while self.investigate_termination(current_state) is False and ticker < max_iterations:
                 # Do an action
-                current_action = self.policy(current_state)
+                current_action = self.get_action(current_state)
                 # Observe next state and reward
                 next_state, reward = self.generate(current_state, current_action)
                 # Update -- gradient is just transpose of current features since we use a linear function -- Hard coded
@@ -113,7 +116,7 @@ class ApproximatePredictionMethods(FunctionApproximationBase):
                 learning_rate = alpha
             while self.investigate_termination(current_state) is False and ticker < max_iterations:
                 # Do an action
-                current_action = self.policy(current_state)
+                current_action = self.get_action(current_state)
                 # Observe next state and reward
                 next_state, reward = self.generate(current_state, current_action)
                 # Update Z

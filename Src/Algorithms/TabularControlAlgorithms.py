@@ -2,6 +2,9 @@ from Algorithms.TabularBase import TabularBase
 import numpy as np
 from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
 
+# All my tabular methods are slightly simplified. I didn't really understand what generalizations needed to be
+# done in advance. The methods do work though.
+
 
 class ControlMethods(TabularBase):
     def __init__(self,
@@ -12,11 +15,11 @@ class ControlMethods(TabularBase):
         self.states = list(mdp)
 
     def sarsa_on_policy(self,
-              pol: Policy,
-              alpha: float = 0.1,
-              episode_size: int = 500,
-              nr_episodes: int = 1000,
-              print_text: bool = False):
+                        pol: Policy,
+                        alpha: float = 0.1,
+                        episode_size: int = 500,
+                        nr_episodes: int = 1000,
+                        print_text: bool = False):
 
         q0 = {state: {action: 0 for action in pol[state]} for state in self.states}
         for i in range(nr_episodes):

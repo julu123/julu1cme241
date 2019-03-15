@@ -6,8 +6,8 @@ from Processes.Variables import State, Action
 class GBMStockSimulator(object):
 
     def __init__(self,
-                 step_size: float = 1/100,
-                 mu: float = 0.05,
+                 step_size: float = 1/40,
+                 mu: float = 0.005,
                  sigma: float = 0.25):
         self.step_size = step_size
         self.mu = mu
@@ -42,5 +42,21 @@ class GBMStockSimulator(object):
         phi_t_0 = np.sin(-time*np.pi/(2*maturity)+np.pi/2)
         phi_t_1 = np.log(ttm)
         phi_t_2 = (time/maturity)**2
+        #phi_n_0 = (strike - state) * ttm
         features = np.array((phi0, phi1, phi2, phi3, phi_t_0, phi_t_1, phi_t_2)).reshape(1, 7)
         return features
+
+    def get_full_matrix(self,
+                        state: State,
+                        m: int = 10000,
+                        n: int = 200,
+                        rf: float = 0.005,
+                        sigma: float = 0.25,
+                        maturity: float = 5):
+        step_size = maturity / n
+        return_matrix = (rf - sigma**2 / 2) * step_size + sigma * np.sqrt(step_size) * norm.rvs(size=(m, n))
+        stock_matrix = np.zeros((m, n + 1))
+        stock_matrix[:, 0] = state
+        for i in range(1, n+1):
+            stock_matrix[:, i] = stock_matrix[:, int(i - 1)]*np.exp(return_matrix[:, int(i - 1)])
+        return stock_matrix

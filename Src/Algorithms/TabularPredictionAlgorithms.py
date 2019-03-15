@@ -3,6 +3,9 @@ import random
 from Algorithms.TabularBase import TabularBase
 from Processes.Variables import State, Action, Policy, Transitions_Rewards_Action_B
 
+# All my tabular methods are slightly simplified. I didn't really understand what generalizations needed to be
+# done in advance. The methods do work though.
+
 
 class PredictionMethods(TabularBase):
     def __init__(self,

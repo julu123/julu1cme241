@@ -7,13 +7,13 @@ import statsmodels.api as sm
 class Option:
     def __init__(self,
                  sigma: float = 0.25,
-                 maturity: float = 0.5,
-                 rf: float = 0.05):
+                 maturity: float = 5,
+                 rf: float = 0.005):
         self.sigma = sigma
         self.rf = rf
         self.maturity = maturity
 
-    def black_scholes_price(self, stock_price: float = 100,
+    def black_scholes_price(self, stock_price: float = 110,
                             strike: float = 100,
                             call_or_put: str = "Call"):
         d1_num = np.log(stock_price / strike) + (self.rf + self.sigma ** 2 / 2) * self.maturity
@@ -25,11 +25,11 @@ class Option:
             return norm.cdf(-d2)*strike*np.exp(-self.rf*self.maturity)-norm.cdf(-d1)*stock_price
 
     def binomial_tree_price(self,
-                            stock_price: float = 100,
-                            strike: float = 110,
+                            stock_price: float = 110,
+                            strike: float = 100,
                             call_or_put: str = "Put",
                             origin: str = "American",
-                            n: int = 100):
+                            n: int = 200):
         dt = self.maturity/n
         u = np.exp(self.sigma*np.sqrt(dt))
         d = 1/u
@@ -62,10 +62,10 @@ class Option:
         return price_matrix[0, 0]
 
     def longstaff_schartz_price(self,
-                                stock_price: float = 100,
-                                strike: float = 110,
+                                stock_price: float = 110,
+                                strike: float = 100,
                                 m: int = 10000,
-                                n: int = 100):
+                                n: int = 200):
         # "call_or_put" is an american put (no need to implement)
         # m is the amount of simulations, n is the amount of time steps
         dt = self.maturity/n
@@ -87,7 +87,7 @@ class Option:
             #results = model.fit()
             #slope = float(results.params)
 
-            estimated_continued_value = slope * stock_prices #+ intercept
+            estimated_continued_value = slope * stock_prices + intercept
             exercise_values = np.maximum(strike - stock_prices, 0)
 
             final_payoffs[estimated_continued_value > exercise_values] = \

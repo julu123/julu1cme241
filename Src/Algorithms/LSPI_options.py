@@ -7,11 +7,10 @@ class LPSI(GBMStockSimulator):
     def __init__(self,
                  starting_stock_price: State = 100,
                  strike: float = 110,
-                 step_size: float = 1/100,
-                 maturity: float = 0.5,
-                 gamma: float = 0.95,
+                 step_size: float = 1/40,
+                 maturity: float = 5,
+                 gamma: float = 0.995,
                  call_or_put: str = "Put",
-                 mu: float = 0,
                  sigma: float = 0.25):
         GBMStockSimulator.__init__(self,
                                    step_size=step_size,
@@ -28,7 +27,6 @@ class LPSI(GBMStockSimulator):
     def initialize_w(self):
         size = (self.get_features(self.starting_stock_price, self.strike, 0, self.maturity)).shape
         return np.random.randn(size[1], 1)*0.01
-        #return np.zeros((size[1], 1))
 
     def update_w(self, A, B):
         return np.matmul(np.linalg.inv(A), B)
@@ -41,22 +39,92 @@ class LPSI(GBMStockSimulator):
             payoff = max(0.0, self.strike - stock_price)
         return payoff
 
-    def learn_algo31(self,
-                     nr_episodes: int = 100000,
-                     nr_steps: int = 100,
-                     batch_size: int = 100,
-                     r: int = 7):
+    def learn_test(self,
+                   nr_episodes: int = 20000,
+                   nr_steps: int = 200,
+                   batch_size: int = 1000,
+                   r: int = 7,
+                   epsilon: float = 1e-2):
+        price = []
+        iteration = []
+        SP = self.get_full_matrix(self.starting_stock_price,
+                                  n=nr_steps, m=nr_episodes, rf=self.rf,
+                                  maturity=self.maturity)
         A = np.zeros((r, r))
         B = np.zeros((r, 1))
         w = np.zeros((r, 1))
-        step_size = self.maturity / nr_steps
-        for i in range(nr_episodes):
-            stock_price = self.starting_stock_price
+
+        delta_t = self.maturity/nr_steps
+        i = 0
+        convergence = False
+        while i < nr_episodes - 1 and convergence is False:
+            time = 0
             for j in range(nr_steps):
+                Q = self.get_payoff(SP[i, j+1])
+
+                current_phi = self.get_features(state=SP[i, j], strike=self.strike,
+                                                time=time, maturity=self.maturity)
+
+                next_phi = self.get_features(state=SP[i, int(j+1)], strike=self.strike,
+                                             time=time+delta_t, maturity=self.maturity)
+
+                P = np.zeros((1, r))
+                if j < nr_steps and Q <= np.matmul(next_phi, w):
+                    P = next_phi
+
+                R = 0
+                if Q > np.matmul(P, w):
+                    R = Q
+
+                A += np.matmul(current_phi.T, np.subtract(current_phi, np.exp(- self.rf * delta_t) * P))
+                B += np.exp(- self.rf * delta_t) * R * current_phi.T
+                time += delta_t
+            i += 1
+            if (i+1) % batch_size == 0:
+                next_w = np.matmul(np.linalg.inv(A), B)
+                if np.linalg.norm(w-next_w) <= epsilon:
+                    convergence = True
+                else:
+                    w = np.matmul(np.linalg.inv(A), B)
+                    A = np.zeros((r, r))
+                    B = np.zeros((r, 1))
+                print('iteration:', i + 1, 'price: ', np.matmul(self.get_features(
+                    state=self.starting_stock_price,
+                    strike=self.strike,
+                    time=0,
+                    maturity=self.maturity), w))
+                price.append(float(np.matmul(self.get_features(
+                    state=self.starting_stock_price,
+                    strike=self.strike,
+                    time=0,
+                    maturity=self.maturity), w)))
+                iteration.append(i+1)
+        return np.matmul(self.get_features(
+                    state=self.starting_stock_price,
+                    strike=self.strike,
+                    time=0,
+                    maturity=self.maturity), w), price, iteration
+
+    def learn(self,
+              nr_episodes: int = 100000,
+              nr_steps: int = 200,
+              batch_size: int = 1000,
+              r: int = 8,
+              epsilon: float = 1e-2):
+        A = np.zeros((r, r))
+        B = np.zeros((r, 1))
+        w = self.initialize_w() #  np.zeros((r, 1))
+        step_size = self.maturity / nr_steps
+        i = 0
+        convergence = False
+        while i <= nr_episodes and convergence is False:
+            noise = 0  # np.random.randn()*10
+            stock_price = self.starting_stock_price + noise
+            for j in range(nr_steps - 1):
                 # Get current features
                 current_features = self.get_features(state=stock_price,
                                                      strike=self.strike,
-                                                     time=j*step_size,
+                                                     time=j * step_size,
                                                      maturity=self.maturity)
                 # Get next stock price
                 next_stock_price = self.generate(state=stock_price, action=False)
@@ -83,125 +151,35 @@ class LPSI(GBMStockSimulator):
                 # Update stock price
                 stock_price = next_stock_price
             if (i+1) % batch_size == 0:
-                w = self.update_w(A, B)
+                next_w = self.update_w(A, B)
+                if np.linalg.norm(w - next_w) <= epsilon:
+                    break
+                else:
+                    w = next_w
                 A = np.zeros((r, r))
                 B = np.zeros((r, 1))
-
-            if (i+1) % 1000 == 0:
                 print('iteration:', i+1, 'price: ', np.matmul(self.get_features(
                                         state=self.starting_stock_price,
                                         strike=self.strike,
                                         time=0,
                                         maturity=self.maturity), w))
+            i += 1
         return np.matmul(self.get_features(state=self.starting_stock_price,
                                            strike=self.strike,
                                            time=0,
                                            maturity=self.maturity), w)
 
-
-    def learn_test(self,
-                   nr_episodes: int = 1000,
-                   k: int = 7,
-                   epsilon: float = 1e-4):
-        w = self.initialize_w()
-        for i in range(nr_episodes):
-            A = np.zeros((k, k))
-            B = np.zeros((k, 1))
-            exercise = False
-            stock_price = self.starting_stock_price
-            time = 0
-            current_features = self.get_features(state=stock_price,
-                                                 strike=self.strike,
-                                                 time=time,
-                                                 maturity=self.maturity)
-
-            while time + self.step_size <= self.maturity and exercise is False:
-                if stock_price - self.strike > np.dot(current_features, w) and stock_price - self.strike > 0:
-                    exercise = True
-                    r = stock_price - self.strike
-                elif time + self.step_size == self.maturity:
-                    exercise = True
-                    r = max(0, stock_price - self.strike)
-                else:
-                    r = 0
-                time += self.step_size
-                stock_price = self.generate(state=stock_price, action=False)
-                next_features = self.get_features(state=stock_price,
-                                                  strike=self.strike,
-                                                  time=time,
-                                                  maturity=self.maturity)
-                A = A + np.dot(current_features.T, (current_features - self.gamma * next_features))
-                B = B + r * current_features.T
-                current_features = next_features
-            w = w + np.dot(np.linalg.inv(A), B)
-        return w, np.dot(self.get_features(state=self.starting_stock_price, strike=self.strike, time=0, maturity=self.maturity), w)
-
-    def learn(self,
-              nr_episodes: int = 10000,
-              batch_size: int = 50):
-        w = self.initialize_w()
-        A = np.zeros((len(w), len(w)))
-        B = np.zeros((len(w), 1))
-        batch_ticker = 0
-        for i in range(nr_episodes):
-            batch_ticker += 1
-            exercise = False
-            stock_price = self.starting_stock_price
-            time = 0
-            current_features = self.get_features(state=stock_price,
-                                                 strike=self.strike,
-                                                 time=time,
-                                                 maturity=self.maturity)
-            while time + self.step_size <= self.maturity and exercise is False:
-                if stock_price - self.strike > np.dot(current_features, w) and stock_price - self.strike > 0:
-                    exercise = True
-                    r = stock_price - self.strike
-                elif time + self.step_size == self.maturity:
-                    exercise = True
-                    r = max(0, stock_price - self.strike)
-                else:
-                    r = 0
-                time += self.step_size
-                stock_price = self.generate(state=stock_price, action=False)
-                next_features = self.get_features(state=stock_price,
-                                                  strike=self.strike,
-                                                  time=time,
-                                                  maturity=self.maturity)
-                Q = 0
-                if self.call_or_put == "Call":
-                    Q = max(0, stock_price - self.strike)
-                elif self.call_or_put == "Put":
-                    Q = max(0, self.strike - stock_price)
-
-                P = np.zeros((1, w.shape[0]))
-                if exercise is True and Q <= np.dot(next_features, w):
-                    P = next_features
-                R = 0
-                if Q > (np.dot(P, w)):
-                    R = Q
-
-                A_part = (current_features - np.exp(-self.rf * self.step_size)*P)
-                A = A + np.dot(A_part.T, current_features)
-
-                B = B + np.exp(- self.rf * self.step_size) * R * current_features.T
-
-                current_features = next_features
-            if batch_ticker % batch_size == 0:
-                w = self.update_w(A, B)
-                A = np.zeros((len(w), len(w)))
-                B = np.zeros((len(w), 1))
-        return w, float(np.dot(self.get_features(state=self.starting_stock_price,
-                                                 strike=self.strike, time=0, maturity=self.maturity), w))
-
     def learn_2(self,
                 alpha: float = 0.01,
                 nr_episodes: int = 10000,
-                decay: bool = True):
+                decay: bool = True,
+                batch_size: int = 1000,
+                epsilon: float = 1e-2):
         w = self.initialize_w()
         for i in range(nr_episodes):
             time = 0
             exercise = False
-            stock_price = 50 + np.random.rand()*200
+            stock_price = self.starting_stock_price
             current_features = self.get_features(state=stock_price,
                                                  strike=self.strike,
                                                  time=time,
@@ -209,11 +187,7 @@ class LPSI(GBMStockSimulator):
             while exercise is False and time + self.step_size <= self.maturity:
                 # Find current values
                 option_value = float(np.dot(current_features, w))
-                intrinsic_value = 0
-                if self.call_or_put == "Call":
-                    intrinsic_value = max(0, stock_price - self.strike)
-                elif self.call_or_put == "Put":
-                    intrinsic_value = max(0, self.strike - stock_price)
+                intrinsic_value = self.get_payoff(stock_price)
 
                 # Find next values
                 time += self.step_size
@@ -230,12 +204,7 @@ class LPSI(GBMStockSimulator):
                     td_error = reward - option_value
                 elif time + self.step_size == self.maturity:
                     exercise = True
-                    maturity_value = 0
-                    if self.call_or_put == "Call":
-                        maturity_value = max(0, stock_price - self.strike)
-                    elif self.call_or_put == "Put":
-                        maturity_value = max(0, self.strike - stock_price)
-                    reward = maturity_value
+                    reward = self.get_payoff(stock_price)
                     td_error = reward - option_value
                 else:
                     td_error = self.gamma * float(np.dot(next_features, w)) - option_value
@@ -250,5 +219,12 @@ class LPSI(GBMStockSimulator):
                 else:
                     learning_rate = alpha
                 w = w + learning_rate * u
+            if (i+1) % batch_size == 0:
+                print('iteration:', i+1, 'price: ', np.matmul(self.get_features(
+                                        state=self.starting_stock_price,
+                                        strike=self.strike,
+                                        time=0,
+                                        maturity=self.maturity), w))
+
         return w, np.dot(self.get_features(state=self.starting_stock_price, strike=self.strike,
                                            time=0, maturity=self.maturity), w)
