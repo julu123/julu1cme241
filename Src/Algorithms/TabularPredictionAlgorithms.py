@@ -110,5 +110,18 @@ class PredictionMethods(TabularBase):
                     for j, k in enumerate(v0):
                         vf_per_iterations[int((i+1)/1-1), j] = v0[k]
         elif method == "Backward" and update == "Offline":
-            pass
-        return v0, vf_per_iterations
+            vf_per_iterations = np.zeros((int(nr_episodes / 1), len(self.states)))
+            e_trace = {i: 0 for i in self.states}
+            for i in range(nr_episodes):
+                sim_states, _, rewards = self.generate(self.pol, steps=episode_size, print_text=print_text)
+                for t in range(len(sim_states) - 1):
+                    for s in self.states:
+                        e_trace[s] = e_trace[s] * lambd
+                    e_trace[sim_states[t]] += 1
+                    current_state = sim_states[t]
+                    next_state = sim_states[t + 1]
+                    lr = alpha - alpha * i / nr_episodes
+                    v0[current_state] = v0[current_state] + lr * \
+                                        (rewards[t] + self.gamma * v0[next_state] - v0[current_state]) * \
+                                        e_trace[current_state]
+        return v0

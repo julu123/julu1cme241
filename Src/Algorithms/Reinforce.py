@@ -3,6 +3,8 @@ from Algorithms.FunctionApproximationBase import FunctionApproximationBase
 from typing import Callable, Tuple, Dict
 from Processes.Variables import State, States, Action
 
+# Note! This code is nor working properly -- disrecte and continious action/state spaces need to bee implemented sepratly 
+
 
 class REINFORCE(FunctionApproximationBase):
     def __init__(self,
@@ -60,7 +62,6 @@ class REINFORCE(FunctionApproximationBase):
                     nabla_log_pi = (self.get_features_w_action(current_state, current_action)).T - exp_value
                 theta += learning_rate * self.gamma**j * G * nabla_log_pi
         return theta
-
 
     def policy(self,
                weights: np.ndarray,

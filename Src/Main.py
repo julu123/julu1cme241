@@ -1,5 +1,6 @@
 from Algorithms.LSPI_options import LPSI
 from Algorithms.Options import Option
+from Processes.MDP_B import MDP_B
 #from Algorithms.ApproximatePredictionAlgorithms import MonteCarlo
 
 
@@ -39,7 +40,30 @@ rf = 0.005
 
 #print(len(features))
 
-print(LPSI().learn_2())
+#print(LPSI().learn_2())
 #print(LPSI().learn_test())
-print(LPSI().learn())
-print(Option().binomial_tree_price())
+#print(LPSI().learn())
+#print(Option().binomial_tree_price())
+
+P_test = {
+    'A': {
+        'Right': {'Termination': (0.5, 0), 'B': (0.5, 0)},
+        'Left': {'Termination': (1, 0)}
+    },
+    'B': {
+        'Right': {'C': (0.5, 0), 'Termination': (0.5, 0)},
+        'Left': {'A': (0.5, 0), 'Termination': (0.5, 0)}
+    },
+    'C': {
+        'Right': {'D': (0.5, 0), 'Termination': (0.5, 0)},
+        'Left': {'B': (0.5, 0), 'Termination': (0.5, 0)}
+    },
+    'D': {
+        'Right': {'Termination': (1, 1)},
+        'Left': {'Termination': (1, 1)}
+    },
+    'Termination': {
+        'Stay': {'Termination': (1, 0)}
+    }
+}
+#print(MDP_B(P_test, gamma=1).get_optimal_value_function(easy=True))

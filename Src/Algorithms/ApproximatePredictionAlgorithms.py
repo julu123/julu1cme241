@@ -3,7 +3,7 @@ from typing import Callable, Tuple
 from Algorithms.FunctionApproximationBase import FunctionApproximationBase
 from Processes.Variables import State, Action
 
-# Only works for linear models. More fancy models would require a different gradient and that is
+# Only works for linear function approximation. More fancy models would require a different gradient and that is
 # not incorporated in my code.
 
 

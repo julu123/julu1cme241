@@ -54,6 +54,7 @@ class MDP_B(MRP_B):
         else:
             for i in range(n):
                 Vk = V0.copy()
+                print(i, Vk)
                 for s in self.States:
                     V0[s] = max([sum([(self.all_info[s][a][k][1] + Vk[k]*self.gamma)*self.all_info[s][a][k][0]
                                                for k in self.all_info[s][a]])
