@@ -2,6 +2,7 @@
 .DS_Store
 Src/__pycache__
 Src/__init__.py
+.DS_Store
 
 *.xml
 
