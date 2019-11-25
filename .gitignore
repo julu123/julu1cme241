@@ -3,6 +3,8 @@
 Src/__pycache__
 Src/__init__.py
 .DS_Store
+__init__.py
+__pychace__
 
 *.xml
 
